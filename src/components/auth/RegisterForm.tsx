@@ -77,7 +77,7 @@ export default function RegisterForm() {
   const isSubmitEnabled = terms && !loading && !success;
 
   return (
-    <div className="w-full max-w-md rounded-xl border border-outline-variant/20 p-8 md:p-10 animate-fade-in"
+    <div className="w-full max-w-lg rounded-xl border border-outline-variant/20 p-8 md:p-12 animate-fade-in"
       style={{ background: "rgba(18,11,23,0.9)", backdropFilter: "blur(20px)" }}>
 
       <div className="text-center mb-8">

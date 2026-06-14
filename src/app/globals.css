@@ -62,14 +62,14 @@
   --color-outline-variant:          #4f4255;
 
   /* Spacing */
-  --spacing-xs:             4px;
-  --spacing-sm:             12px;
-  --spacing-md:             24px;
-  --spacing-lg:             48px;
-  --spacing-xl:             80px;
-  --spacing-gutter:         24px;
-  --spacing-container-max:  1280px;
-  --spacing-base:           8px;
+  --spacing-brand-xs:             4px;
+  --spacing-brand-sm:             12px;
+  --spacing-brand-md:             24px;
+  --spacing-brand-lg:             48px;
+  --spacing-brand-xl:             80px;
+  --spacing-gutter:               24px;
+  --spacing-container-max:        1280px;
+  --spacing-base:                 8px;
 
   /* Border radius */
   --radius-DEFAULT: 0.125rem;

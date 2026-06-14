@@ -83,7 +83,7 @@ export default function LoginForm() {
       style={{ background: "rgba(18,11,23,0.85)", backdropFilter: "blur(20px)" }}>
 
       {/* Left: Branding panel */}
-      <div className="hidden md:flex flex-col justify-center items-center p-xl relative overflow-hidden"
+      <div className="hidden md:flex flex-col justify-center items-center p-brand-xl relative overflow-hidden"
         style={{ background: "rgba(32,25,37,0.6)" }}>
         <div className="absolute inset-0 z-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -56,7 +56,7 @@ export default function ShopPage() {
   }, [products, selectedCategories, currentMaxPrice, sortBy]);
 
   return (
-    <div className="section-container py-xl">
+    <div className="section-container py-brand-xl">
       {/* Page Header */}
       <div className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-outline-variant/20 pb-6">
         <div>
@@ -97,7 +97,7 @@ export default function ShopPage() {
         {/* Product Grid */}
         <div className="col-span-1 md:col-span-9">
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-md">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-brand-md">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="glass-panel rounded-xl h-80 animate-pulse" />
               ))}
@@ -114,7 +114,7 @@ export default function ShopPage() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-md">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-brand-md">
                 {filteredProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}

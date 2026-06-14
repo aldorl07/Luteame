@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function RecoverPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center px-gutter py-xl">
+    <div className="min-h-screen flex items-center justify-center px-gutter py-brand-xl">
       <RecoverForm />
     </div>
   );

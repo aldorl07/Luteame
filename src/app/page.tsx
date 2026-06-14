@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <div className="section-container pb-xl">
+    <div className="section-container pb-brand-xl">
       <HeroSection />
       <ServicesGrid />
     </div>

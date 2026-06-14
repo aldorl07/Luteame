@@ -23,7 +23,7 @@ export default function ConfiguratorPage() {
   };
 
   return (
-    <div className="section-container py-md pb-xl">
+    <div className="section-container py-brand-md pb-brand-xl">
       {/* Page Header */}
       <div className="mb-6">
         <h1 className="font-poppins text-display-lg-mobile md:text-display-lg font-extrabold text-primary">

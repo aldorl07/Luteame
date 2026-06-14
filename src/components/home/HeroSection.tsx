@@ -9,21 +9,21 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="grid grid-cols-1 md:grid-cols-12 gap-gutter min-h-[820px] items-center pt-xl">
+    <section className="grid grid-cols-1 md:grid-cols-2 gap-brand-lg xl:gap-brand-xl min-h-[820px] items-center pt-brand-xl">
       {/* Left: Text Content */}
-      <div className="md:col-span-6 flex flex-col gap-6 animate-fade-in">
+      <div className="flex flex-col gap-6 animate-fade-in">
         {/* Badge */}
         <div className="inline-flex items-center gap-2 chip-purple w-fit">
           <span className="material-symbols-outlined text-[14px]">verified</span>
           GARANTÍA LOCAL · HUANCAYO, JUNÍN
         </div>
 
-        <h1 className="font-poppins text-display-lg-mobile md:text-display-lg text-primary font-extrabold leading-tight tracking-tight">
+        <h1 className="font-poppins text-display-lg-mobile md:text-display-lg text-primary font-extrabold leading-tight tracking-tight max-w-xl">
           El Setup de tus Sueños,{" "}
           <span className="text-white">Simplificado</span>
         </h1>
 
-        <p className="font-montserrat text-body-lg text-on-surface-variant max-w-lg">
+        <p className="font-montserrat text-body-lg text-on-surface-variant max-w-lg leading-relaxed">
           Hardware de alto rendimiento y escritorios a medida con garantía local
           en Huancayo, Junín. Arma tu estación de trabajo ideal con nosotros.
         </p>
@@ -56,7 +56,7 @@ export default function HeroSection() {
       </div>
 
       {/* Right: Hero Image */}
-      <div className="md:col-span-6 relative h-[400px] md:h-[600px] rounded-xl overflow-hidden glass-card group animate-slide-in-right">
+      <div className="relative h-[400px] md:h-[600px] rounded-xl overflow-hidden glass-card group animate-slide-in-right">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXlO4pdCbrmxXT7LqSwK-hHzHY3UYzpRY4N8B0_5lIiyLa22q5XfJ7lspEaJBy7PYxPfVd0Qj1tbSLqKPcZ_sg11eRWLoridvokhvVf3uwKe9RepViAwfkU_GwKzeTD0YT7te40YSFsaPSoNGnYnis3ghGtsKN2JR8IJ4y7_Sh4DNe28qaYdw7aG1V4YNh7gR3uz4iCl8lvoEvvmWoCVN_I0qkYslBBNATECwFFCgTMDMDCAi0CtnABzNkv326oE8kikUVVhiXNqbR"

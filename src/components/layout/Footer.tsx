@@ -5,8 +5,8 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="w-full border-t border-outline-variant/10 mt-xl" style={{ background: "rgba(18,11,23,0.95)" }}>
-      <div className="section-container py-lg">
+    <footer className="w-full border-t border-outline-variant/10 mt-brand-xl" style={{ background: "rgba(18,11,23,0.95)" }}>
+      <div className="section-container py-brand-lg">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-gutter">
           {/* Brand */}
           <div className="md:col-span-4 flex flex-col gap-3">
@@ -26,7 +26,7 @@ export default function Footer() {
           </div>
 
           {/* Links */}
-          <div className="md:col-span-8 flex flex-wrap gap-lg justify-start md:justify-end items-start">
+          <div className="md:col-span-8 flex flex-wrap gap-brand-lg justify-start md:justify-end items-start">
             <nav className="flex flex-col gap-3">
               <h5 className="font-montserrat text-label-caps uppercase tracking-widest text-on-surface mb-1">
                 Plataforma

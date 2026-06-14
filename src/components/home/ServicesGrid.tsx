@@ -31,7 +31,7 @@ const SERVICES = [
 
 export default function ServicesGrid() {
   return (
-    <section id="services" className="mt-xl pt-xl border-t border-outline-variant/10">
+    <section id="services" className="mt-brand-xl pt-brand-xl border-t border-outline-variant/10">
       <div className="mb-8">
         <h2 className="font-poppins text-headline-md text-on-background font-extrabold">
           Nuestros Servicios
