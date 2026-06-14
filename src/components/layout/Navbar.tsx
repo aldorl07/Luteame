@@ -18,7 +18,7 @@ const NAV_LINKS = [
 export default function Navbar() {
   const pathname        = usePathname();
   const router          = useRouter();
-  const { user, loading } = useAuthContext();
+  const { user, loading, isAdmin } = useAuthContext();
   const itemCount       = useCartStore((s) => s.itemCount);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -26,6 +26,11 @@ export default function Navbar() {
     await signOut(auth);
     router.push("/");
   };
+
+  const navItems = [...NAV_LINKS];
+  if (isAdmin) {
+    navItems.push({ href: "/admin", label: "Admin Portal" });
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full" style={{ backdropFilter: "blur(12px)", background: "rgba(24,17,28,0.82)" }}>
@@ -37,7 +42,8 @@ export default function Navbar() {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">
-          {NAV_LINKS.map(({ href, label }) => {
+          {navItems.map(({ href, label }) => {
+            const isAdminLink = href === "/admin";
             const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
             return (
               <Link
@@ -45,8 +51,12 @@ export default function Navbar() {
                 href={href}
                 className={`font-montserrat text-label-caps font-bold tracking-widest uppercase transition-colors duration-300 pb-1 ${
                   isActive
-                    ? "text-primary border-b-2 border-primary"
-                    : "text-on-surface-variant hover:text-primary"
+                    ? isAdminLink
+                      ? "text-tertiary border-b-2 border-tertiary text-glow"
+                      : "text-primary border-b-2 border-primary"
+                    : isAdminLink
+                      ? "text-tertiary/80 hover:text-tertiary hover:text-glow"
+                      : "text-on-surface-variant hover:text-primary"
                 }`}
               >
                 {label}
@@ -115,7 +125,8 @@ export default function Navbar() {
       {mobileOpen && (
         <div className="md:hidden glass-panel border-t border-outline-variant/20 animate-fade-in">
           <nav className="section-container py-4 flex flex-col gap-3">
-            {NAV_LINKS.map(({ href, label }) => {
+            {navItems.map(({ href, label }) => {
+              const isAdminLink = href === "/admin";
               const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
               return (
                 <Link
@@ -123,7 +134,9 @@ export default function Navbar() {
                   href={href}
                   onClick={() => setMobileOpen(false)}
                   className={`font-montserrat text-label-caps font-bold tracking-widest uppercase py-2 transition-colors ${
-                    isActive ? "text-primary" : "text-on-surface-variant"
+                    isActive
+                      ? isAdminLink ? "text-tertiary text-glow" : "text-primary"
+                      : isAdminLink ? "text-tertiary/80 hover:text-tertiary" : "text-on-surface-variant"
                   }`}
                 >
                   {label}

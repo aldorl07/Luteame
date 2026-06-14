@@ -4,8 +4,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { getUserProfile } from "@/lib/firestore";
 
 function mapFirebaseError(code: string): string {
   switch (code) {
@@ -36,6 +37,7 @@ export default function LoginForm() {
   const [globalError, setGlobalError]     = useState("");
   const [loading, setLoading]             = useState(false);
   const [success, setSuccess]             = useState(false);
+  const [isAdminMode, setIsAdminMode]     = useState(false);
 
   // Real-time email validation
   const handleEmailChange = (v: string) => {
@@ -60,12 +62,27 @@ export default function LoginForm() {
     setGlobalError("");
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      
+      if (isAdminMode) {
+        const profile = await getUserProfile(userCredential.user.uid);
+        if (profile?.rol !== "admin") {
+          await signOut(auth);
+          setGlobalError("Acceso denegado. Esta cuenta no tiene privilegios de administrador.");
+          setLoading(false);
+          return;
+        }
+      }
+
       setSuccess(true);
 
-      // Restore configurator state from localStorage if saved before redirect
-      const savedConfig = localStorage.getItem("luteame-pending-config");
-      router.push(savedConfig ? "/configurator" : "/");
+      if (isAdminMode) {
+        router.push("/admin");
+      } else {
+        // Restore configurator state from localStorage if saved before redirect
+        const savedConfig = localStorage.getItem("luteame-pending-config");
+        router.push(savedConfig ? "/configurator" : "/");
+      }
     } catch (err: unknown) {
       const code = (err as { code?: string }).code ?? "";
       const msg  = mapFirebaseError(code);
@@ -109,13 +126,29 @@ export default function LoginForm() {
       {/* Right: Form */}
       <div className="p-8 md:p-12 flex flex-col justify-center">
         <div className="mb-8">
-          <h1 className="font-poppins text-headline-md text-on-background mb-1">
-            Iniciar Sesión
-          </h1>
+          <div className="flex items-center gap-2 mb-1">
+            <h1 className="font-poppins text-headline-md text-on-background">
+              {isAdminMode ? "Acceso Admin" : "Iniciar Sesión"}
+            </h1>
+            {isAdminMode && (
+              <span className="chip-purple border-tertiary-container text-tertiary font-bold tracking-widest text-[9px] bg-tertiary/10 border px-2 py-0.5 rounded uppercase">
+                SISTEMA DE CONTROL
+              </span>
+            )}
+          </div>
           <p className="font-montserrat text-body-sm text-on-surface-variant">
-            Bienvenido de vuelta, comandante.
+            {isAdminMode ? "Consola de administración y monitoreo de sistemas." : "Bienvenido de vuelta, comandante."}
           </p>
         </div>
+
+        {isAdminMode && (
+          <div className="mb-5 p-3 rounded-lg bg-tertiary/10 border border-tertiary/20 text-tertiary font-montserrat text-[12px] flex items-start gap-2 animate-fade-in">
+            <span className="material-symbols-outlined text-base mt-0.5 select-none">warning</span>
+            <span>
+              <strong>Advertencia de Seguridad:</strong> Acceso restringido únicamente a administradores autorizados. Los accesos no autorizados serán registrados.
+            </span>
+          </div>
+        )}
 
         {globalError && (
           <div className="mb-4 p-3 rounded-lg bg-error-container/30 border border-error/30 text-error font-montserrat text-body-sm animate-fade-in">
@@ -198,45 +231,82 @@ export default function LoginForm() {
             ) : success ? (
               <span className="material-symbols-outlined text-base">check_circle</span>
             ) : null}
-            {success ? "¡Bienvenido!" : "Iniciar Sesión"}
+            {success ? "¡Bienvenido!" : isAdminMode ? "Autenticar Administrador" : "Iniciar Sesión"}
             {!loading && !success && (
               <span className="material-symbols-outlined text-base">arrow_forward</span>
             )}
           </button>
         </form>
 
-        {/* Divider */}
-        <div className="flex items-center my-6">
-          <div className="flex-grow border-t border-outline-variant/30" />
-          <span className="px-3 font-montserrat text-label-caps text-outline-variant uppercase">O conecta con</span>
-          <div className="flex-grow border-t border-outline-variant/30" />
-        </div>
+        {!isAdminMode && (
+          <>
+            {/* Divider */}
+            <div className="flex items-center my-6">
+              <div className="flex-grow border-t border-outline-variant/30" />
+              <span className="px-3 font-montserrat text-label-caps text-outline-variant uppercase">O conecta con</span>
+              <div className="flex-grow border-t border-outline-variant/30" />
+            </div>
 
-        {/* Social (visual stubs) */}
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            type="button"
-            onClick={() => alert("Google OAuth — configura tu proveedor en Firebase Console.")}
-            className="flex items-center justify-center gap-2 border border-white/20 text-white/80 font-montserrat text-label-caps py-3 rounded-lg hover:bg-white/5 transition-colors"
-          >
-            <span className="material-symbols-outlined text-lg">login</span> GOOGLE
-          </button>
-          <button
-            type="button"
-            onClick={() => alert("Discord OAuth — configura tu proveedor en Firebase Console.")}
-            className="flex items-center justify-center gap-2 border border-white/20 text-white/80 font-montserrat text-label-caps py-3 rounded-lg hover:bg-white/5 transition-colors"
-          >
-            <span className="material-symbols-outlined text-lg">forum</span> DISCORD
-          </button>
-        </div>
+            {/* Social (visual stubs) */}
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => alert("Google OAuth — configura tu proveedor en Firebase Console.")}
+                className="flex items-center justify-center gap-2 border border-white/20 text-white/80 font-montserrat text-label-caps py-3 rounded-lg hover:bg-white/5 transition-colors"
+              >
+                <span className="material-symbols-outlined text-lg">login</span> GOOGLE
+              </button>
+              <button
+                type="button"
+                onClick={() => alert("Discord OAuth — configura tu proveedor en Firebase Console.")}
+                className="flex items-center justify-center gap-2 border border-white/20 text-white/80 font-montserrat text-label-caps py-3 rounded-lg hover:bg-white/5 transition-colors"
+              >
+                <span className="material-symbols-outlined text-lg">forum</span> DISCORD
+              </button>
+            </div>
+          </>
+        )}
 
-        {/* Register link */}
-        <p className="mt-8 text-center font-montserrat text-body-sm text-on-surface-variant">
-          ¿No tienes una cuenta?{" "}
-          <Link href="/register" className="text-primary-container font-semibold hover:text-primary transition-colors">
-            Crear una cuenta
-          </Link>
-        </p>
+        {/* Register & Toggle links */}
+        <div className="mt-8 text-center space-y-3">
+          {isAdminMode ? (
+            <button
+              type="button"
+              onClick={() => {
+                setIsAdminMode(false);
+                setGlobalError("");
+                setEmailError("");
+                setPasswordError("");
+              }}
+              className="text-primary-container font-semibold hover:text-primary transition-colors font-montserrat text-body-sm flex items-center justify-center gap-1 mx-auto"
+            >
+              <span className="material-symbols-outlined text-base">arrow_back</span>
+              Volver a Inicio de Sesión de Cliente
+            </button>
+          ) : (
+            <>
+              <p className="font-montserrat text-body-sm text-on-surface-variant">
+                ¿No tienes una cuenta?{" "}
+                <Link href="/register" className="text-primary-container font-semibold hover:text-primary transition-colors">
+                  Crear una cuenta
+                </Link>
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsAdminMode(true);
+                  setGlobalError("");
+                  setEmailError("");
+                  setPasswordError("");
+                }}
+                className="text-outline hover:text-primary-fixed-dim transition-colors font-montserrat text-body-sm text-[12px] flex items-center justify-center gap-1 mx-auto mt-2"
+              >
+                <span className="material-symbols-outlined text-sm">shield_person</span>
+                Acceso de Administrador
+              </button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
