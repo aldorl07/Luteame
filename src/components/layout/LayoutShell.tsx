@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 
-const AUTH_ROUTES = ["/login", "/register", "/recover"];
+const AUTH_ROUTES = ["/login", "/register", "/recover", "/auth"];
 
 export default function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
