@@ -1,50 +1,93 @@
 // src/store/configuratorStore.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Product } from "@/types";
+import type { Product, NecesidadUso, PresupuestoRango, CompatibilityReport } from "@/types";
+import { checkCompatibility } from "@/lib/compatibilityRules";
 
 interface ConfiguratorStore {
   activeStep: number;
-  selections: (Product | null)[];   // index 0=escritorio, 1=componentes, 2=refrigeracion
-  setStep: (step: number) => void;
-  selectProduct: (step: number, product: Product) => void;
-  clearSelection: (step: number) => void;
-  clearAll: () => void;
+  usoRecomendado: NecesidadUso | null;
+  presupuestoRango: PresupuestoRango | null;
+  selections: Record<string, Product | null>;
+  compatibility: CompatibilityReport;
   totalPrice: number;
+  setStep: (step: number) => void;
+  setUsoYPresupuesto: (uso: NecesidadUso, presupuesto: PresupuestoRango) => void;
+  selectProduct: (category: string, product: Product) => void;
+  clearSelection: (category: string) => void;
+  clearAll: () => void;
+  setRecommendedSetup: (setup: Record<string, Product>) => void;
 }
+
+const INITIAL_SELECTIONS: Record<string, Product | null> = {
+  procesadores: null,
+  placas: null,
+  ram: null,
+  graficas: null,
+  almacenamiento: null,
+  fuentes: null,
+  gabinetes: null,
+  refrigeracion: null,
+  escritorios: null,
+};
 
 export const useConfiguratorStore = create<ConfiguratorStore>()(
   persist(
     (set, get) => ({
       activeStep: 0,
-      selections: [null, null, null],
+      usoRecomendado: null,
+      presupuestoRango: null,
+      selections: INITIAL_SELECTIONS,
+      compatibility: { compatible: true, warnings: [] },
       totalPrice: 0,
 
       setStep: (step) => set({ activeStep: step }),
 
-      selectProduct: (step, product) => {
-        const selections = [...get().selections];
-        selections[step] = product;
-        const total = selections.reduce(
-          (sum, p) => sum + (p ? p.precio : 0),
-          0
-        );
-        set({ selections, totalPrice: total });
+      setUsoYPresupuesto: (uso, presupuesto) => {
+        set({ usoRecomendado: uso, presupuestoRango: presupuesto });
       },
 
-      clearSelection: (step) => {
-        const selections = [...get().selections];
-        selections[step] = null;
-        const total = selections.reduce(
+      selectProduct: (category, product) => {
+        const selections = { ...get().selections, [category]: product };
+        const totalPrice = Object.values(selections).reduce(
           (sum, p) => sum + (p ? p.precio : 0),
           0
         );
-        set({ selections, totalPrice: total });
+        const compatibility = checkCompatibility(selections);
+        set({ selections, totalPrice, compatibility });
+      },
+
+      clearSelection: (category) => {
+        const selections = { ...get().selections, [category]: null };
+        const totalPrice = Object.values(selections).reduce(
+          (sum, p) => sum + (p ? p.precio : 0),
+          0
+        );
+        const compatibility = checkCompatibility(selections);
+        set({ selections, totalPrice, compatibility });
       },
 
       clearAll: () =>
-        set({ selections: [null, null, null], totalPrice: 0, activeStep: 0 }),
+        set({
+          activeStep: 0,
+          usoRecomendado: null,
+          presupuestoRango: null,
+          selections: { ...INITIAL_SELECTIONS },
+          compatibility: { compatible: true, warnings: [] },
+          totalPrice: 0,
+        }),
+
+      setRecommendedSetup: (setup) => {
+        const selections = { ...INITIAL_SELECTIONS, ...setup };
+        const totalPrice = Object.values(selections).reduce(
+          (sum, p) => sum + (p ? p.precio : 0),
+          0
+        );
+        const compatibility = checkCompatibility(selections);
+        set({ selections, totalPrice, compatibility });
+      },
     }),
-    { name: "luteame-configurator" }
+    { name: "luteame-configurator-v2" }
   )
 );
+

@@ -38,17 +38,20 @@ export default function ProductCard({ product }: ProductCardProps) {
   const items   = useCartStore((s) => s.items);
   const [added, setAdded] = useState(false);
 
-  const isInCart = items.some((i) => i.productId === product.id);
+  const isInCart = items.some((i) => i.id === product.id);
   const outOfStock = product.stock === 0;
 
   const handleAddToCart = () => {
     if (isInCart || outOfStock) return;
     addItem({
-      productId:  product.id,
-      nombre:     product.nombre,
-      precio:     product.precio,
-      imagenUrl:  product.imagenUrl,
-      categoria:  product.categoria,
+      id:             product.id,
+      tipo:           "producto",
+      nombre:         product.nombre,
+      precioUnitario: product.precio,
+      precioTotal:    product.precio,
+      cantidad:       1,
+      imagenUrl:      product.imagenUrl,
+      categoria:      product.categoria,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);

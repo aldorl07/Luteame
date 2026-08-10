@@ -1,10 +1,11 @@
 "use client";
 // src/components/layout/LayoutShell.tsx
-// Conditionally renders Navbar and Footer based on current route.
+// Conditionally renders Navbar, CartSidebar, and Footer based on current route.
 
 import { usePathname } from "next/navigation";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import CartSidebar from "./CartSidebar";
 
 const AUTH_ROUTES = ["/login", "/register", "/recover", "/auth"];
 
@@ -18,7 +19,9 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
       <main className={`relative z-10 flex-grow ${isAuthPage ? "" : ""}`}>
         {children}
       </main>
+      {!isAuthPage && <CartSidebar />}
       {!isAuthPage && <Footer />}
     </>
   );
 }
+

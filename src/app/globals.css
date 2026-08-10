@@ -277,3 +277,19 @@ body {
   direction: ltr;
   -webkit-font-smoothing: antialiased;
 }
+
+/* Print Optimization */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    background-image: none !important;
+  }
+  header, footer, main, button, .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+}
+

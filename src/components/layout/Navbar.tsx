@@ -8,6 +8,7 @@ import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAuthContext } from "@/context/AuthContext";
 import { useCartStore } from "@/store/cartStore";
+import { useUIStore } from "@/store/uiStore";
 
 const NAV_LINKS = [
   { href: "/",             label: "Home" },
@@ -20,6 +21,8 @@ export default function Navbar() {
   const router          = useRouter();
   const { user, loading, isAdmin } = useAuthContext();
   const itemCount       = useCartStore((s) => s.itemCount);
+  const cartOpen        = useUIStore((s) => s.cartOpen);
+  const setCartOpen    = useUIStore((s) => s.setCartOpen);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleSignOut = async () => {
@@ -69,13 +72,13 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
           {/* Cart */}
           <button
-            className="relative text-on-surface-variant hover:text-primary transition-colors"
+            className="relative text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
             aria-label="Carrito de compras"
-            onClick={() => {}}
+            onClick={() => setCartOpen(!cartOpen)}
           >
             <span className="material-symbols-outlined">shopping_cart</span>
             {itemCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-primary-container text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-primary-container text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center animate-pulse-glow">
                 {itemCount}
               </span>
             )}

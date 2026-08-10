@@ -4,8 +4,19 @@
 import { useState, useEffect } from "react";
 import { subscribeToProductsByCategory } from "@/lib/firestore";
 import type { Product, ProductCategory } from "@/types";
-import { STEP_LABELS } from "@/types";
 import OptionCard from "./OptionCard";
+
+const CATEGORY_TITLES: Record<string, string> = {
+  procesadores: "Procesadores (CPU)",
+  graficas: "Tarjetas de Video (GPU)",
+  placas: "Placas Madre (Motherboards)",
+  ram: "Memorias RAM",
+  almacenamiento: "Discos de Almacenamiento (SSD)",
+  fuentes: "Fuentes de Poder (PSU)",
+  refrigeracion: "Sistemas de Refrigeración",
+  gabinetes: "Gabinetes (Cases)",
+  escritorios: "Escritorios Luteame",
+};
 
 interface OptionGridProps {
   activeStep: number;
@@ -34,7 +45,7 @@ export default function OptionGrid({ activeStep, category, selectedProduct, onSe
         style={{ background: "rgba(36,29,41,0.5)" }}>
         <div>
           <h3 className="font-montserrat text-title-lg text-on-surface font-semibold">
-            {STEP_LABELS[activeStep]}
+            Seleccionar: {CATEGORY_TITLES[category] || category}
           </h3>
           <p className="font-montserrat text-[12px] text-on-surface-variant mt-0.5">
             {products.length} opciones disponibles
