@@ -11,9 +11,12 @@ import { useCartStore } from "@/store/cartStore";
 import { useUIStore } from "@/store/uiStore";
 
 const NAV_LINKS = [
-  { href: "/",             label: "Home" },
-  { href: "/configurator", label: "Configurator" },
-  { href: "/shop",         label: "Shop" },
+  { href: "/",             label: "Inicio" },
+  { href: "/configurator", label: "Configurador" },
+  { href: "/shop",         label: "Tienda" },
+  { href: "/services",     label: "Servicios" },
+  { href: "/support",      label: "Soporte" },
+  { href: "/warranty",     label: "Garantías" },
 ];
 
 export default function Navbar() {

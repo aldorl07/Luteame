@@ -120,3 +120,47 @@ export async function getSetupsByUser(uid: string): Promise<Setup[]> {
   const snapshot = await getDocs(q);
   return snapshot.docs.map((d) => ({ id: d.id, ...d.data() })) as Setup[];
 }
+
+// ─── Tickets de Soporte ────────────────────────────────────────────────────────
+
+export async function createSupportTicket(ticket: {
+  clienteId: string;
+  clienteEmail: string;
+  titulo: string;
+  descripcion: string;
+  prioridad: "baja" | "media" | "alta";
+}): Promise<string> {
+  const ref = await addDoc(collection(db, "tickets_soporte"), {
+    ...ticket,
+    estado: "abierto",
+    fechaCreacion: serverTimestamp(),
+  });
+  return ref.id;
+}
+
+export function subscribeToTicketsByUser(
+  uid: string,
+  callback: (tickets: any[]) => void
+): Unsubscribe {
+  const q = query(
+    collection(db, "tickets_soporte"),
+    where("clienteId", "==", uid),
+    orderBy("fechaCreacion", "desc")
+  );
+  return onSnapshot(q, (snapshot) => {
+    const tickets = snapshot.docs.map((d) => ({
+      id: d.id,
+      ...d.data(),
+    }));
+    callback(tickets);
+  });
+}
+
+// ─── Garantías y Equipos Ensamblados ──────────────────────────────────────────
+
+export async function getBuildDetails(buildId: string): Promise<any | null> {
+  const snap = await getDoc(doc(db, "equipos_ensamblados", buildId));
+  if (!snap.exists()) return null;
+  return { id: snap.id, ...snap.data() };
+}
+
