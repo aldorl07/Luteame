@@ -87,6 +87,13 @@ export default function Navbar() {
             )}
           </button>
 
+          <Link
+            href="/configurator"
+            className="hidden md:flex btn-primary"
+          >
+            Armar Setup
+          </Link>
+
           {/* Auth button */}
           {!loading && (
             user ? (
@@ -106,13 +113,6 @@ export default function Navbar() {
               </Link>
             )
           )}
-
-          <Link
-            href="/configurator"
-            className="hidden md:flex btn-primary"
-          >
-            Armar Setup
-          </Link>
 
           {/* Mobile menu toggle */}
           <button

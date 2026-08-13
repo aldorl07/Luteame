@@ -193,7 +193,7 @@ export default function ConfiguratorPage() {
           </h2>
 
           {/* Need Selection */}
-          <div className="mb-8">
+          <div className="mb-6">
             <label className="block font-montserrat text-label-caps text-on-surface-variant uppercase tracking-wider mb-3">
               ¿Para qué usarás principalmente la computadora?
             </label>
@@ -222,7 +222,7 @@ export default function ConfiguratorPage() {
           </div>
 
           {/* Budget Selection */}
-          <div className="mb-8">
+          <div className="mb-6">
             <label className="block font-montserrat text-label-caps text-on-surface-variant uppercase tracking-wider mb-3">
               ¿Cuál es tu rango de presupuesto estimado?
             </label>
@@ -426,7 +426,7 @@ export default function ConfiguratorPage() {
             Resumen Final de tu Setup Personalizado
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
             {/* Component Summary Card */}
             <div className="space-y-4">
               <h3 className="font-montserrat text-title-lg font-bold text-primary flex items-center gap-1.5">
@@ -488,7 +488,7 @@ export default function ConfiguratorPage() {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-wrap justify-between items-center gap-4 border-t border-outline-variant/10 pt-6">
+          <div className="flex flex-wrap justify-between items-center gap-4 border-t border-outline-variant/10 pt-4">
             <button
               onClick={() => setStep(1)}
               className="btn-secondary flex items-center gap-2 py-3 px-6 text-xs font-bold uppercase tracking-wider"
