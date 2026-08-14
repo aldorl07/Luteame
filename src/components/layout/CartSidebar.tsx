@@ -1,6 +1,7 @@
 "use client";
 // src/components/layout/CartSidebar.tsx
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useCartStore } from "@/store/cartStore";
 import { useUIStore } from "@/store/uiStore";
@@ -9,6 +10,7 @@ import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 export default function CartSidebar() {
+  const router = useRouter();
   const isOpen = useUIStore((s) => s.cartOpen);
   const setCartOpen = useUIStore((s) => s.setCartOpen);
 
@@ -24,15 +26,6 @@ export default function CartSidebar() {
   const [creatingQuote, setCreatingQuote] = useState(false);
   const [activeQuote, setActiveQuote] = useState<{ id: string; total: number } | null>(null);
 
-  const [checkoutMode, setCheckoutMode] = useState(false);
-  const [clientData, setClientData] = useState({
-    nombre: user?.displayName || "",
-    telefono: "",
-    direccion: "",
-    metodoPago: "transferencia", // transferencia, yape_plin, tarjeta
-  });
-  const [checkoutSuccess, setCheckoutSuccess] = useState(false);
-
   if (!isOpen) return null;
 
   const toggleExpand = (id: string) => {
@@ -45,7 +38,7 @@ export default function CartSidebar() {
       // Create quote payload
       const quotePayload = {
         clienteId: user?.uid || "anonimo",
-        clienteNombre: clientData.nombre || user?.email || "Cliente General",
+        clienteNombre: user?.displayName || user?.email || "Cliente General",
         fecha: serverTimestamp(),
         validezDias: 7,
         items: items.map((i) => ({
@@ -76,43 +69,6 @@ export default function CartSidebar() {
     }
   };
 
-  const handleCheckoutSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!clientData.nombre || !clientData.telefono || !clientData.direccion) {
-      alert("Por favor completa todos los campos.");
-      return;
-    }
-
-    setCreatingQuote(true);
-    try {
-      const orderPayload = {
-        clienteId: user?.uid || "anonimo",
-        clienteNombre: clientData.nombre,
-        telefono: clientData.telefono,
-        direccion: clientData.direccion,
-        metodoPago: clientData.metodoPago,
-        fecha: serverTimestamp(),
-        items: items.map((i) => ({
-          nombre: i.nombre,
-          tipo: i.tipo,
-          cantidad: i.cantidad,
-          precioTotal: i.precioTotal,
-        })),
-        total: total,
-        estado: "pendiente", // pendiente, en_ensamblaje, enviado, completado
-      };
-
-      await addDoc(collection(db, "pedidos"), orderPayload);
-      setCheckoutSuccess(true);
-      clearCart();
-    } catch (err) {
-      console.error("Error creating order:", err);
-      alert("Error al procesar el pedido.");
-    } finally {
-      setCreatingQuote(false);
-    }
-  };
-
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-background/60 backdrop-blur-sm animate-fade-in">
       {/* Click outside target */}
@@ -132,7 +88,6 @@ export default function CartSidebar() {
           <button
             onClick={() => {
               setCartOpen(false);
-              setCheckoutMode(false);
               setActiveQuote(null);
             }}
             className="text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center p-1 rounded-full hover:bg-white/5"
@@ -179,121 +134,8 @@ export default function CartSidebar() {
               </button>
             </div>
           </div>
-        ) : checkoutSuccess ? (
-          /* SCREEN 2: Pedido Exitoso */
-          <div className="flex-grow p-6 flex flex-col justify-center items-center text-center gap-6 animate-fade-in">
-            <div className="w-16 h-16 rounded-full bg-primary-container/20 border border-primary-container flex items-center justify-center text-primary">
-              <span className="material-symbols-outlined text-4xl">task_alt</span>
-            </div>
-            <div>
-              <h3 className="font-poppins text-title-lg font-bold text-white mb-2">¡Pedido Registrado con Éxito!</h3>
-              <p className="font-montserrat text-body-sm text-on-surface-variant max-w-[320px] mx-auto leading-relaxed">
-                Nos comunicaremos contigo a la brevedad para coordinar el ensamblaje y entrega de tu setup en Huancayo.
-              </p>
-            </div>
-            <button
-              onClick={() => {
-                setCheckoutSuccess(false);
-                setCheckoutMode(false);
-                setCartOpen(false);
-              }}
-              className="btn-primary py-2.5 text-xs font-bold uppercase tracking-wider px-8"
-            >
-              Listo
-            </button>
-          </div>
-        ) : checkoutMode ? (
-          /* SCREEN 3: Checkout Form */
-          <form onSubmit={handleCheckoutSubmit} className="flex-grow p-6 overflow-y-auto flex flex-col justify-between animate-fade-in">
-            <div className="space-y-4">
-              <h3 className="font-poppins text-title-lg font-bold text-white mb-4">Datos del Pedido</h3>
-
-              <div>
-                <label className="block font-montserrat text-label-caps text-on-surface-variant mb-1 uppercase tracking-widest">
-                  Nombre Completo
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={clientData.nombre}
-                  onChange={(e) => setClientData({ ...clientData, nombre: e.target.value })}
-                  placeholder="Tu nombre completo"
-                  className="input-glass pl-4"
-                />
-              </div>
-
-              <div>
-                <label className="block font-montserrat text-label-caps text-on-surface-variant mb-1 uppercase tracking-widest">
-                  Teléfono / WhatsApp
-                </label>
-                <input
-                  type="tel"
-                  required
-                  value={clientData.telefono}
-                  onChange={(e) => setClientData({ ...clientData, telefono: e.target.value })}
-                  placeholder="Ej. 987654321"
-                  className="input-glass pl-4"
-                />
-              </div>
-
-              <div>
-                <label className="block font-montserrat text-label-caps text-on-surface-variant mb-1 uppercase tracking-widest">
-                  Dirección de Entrega
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={clientData.direccion}
-                  onChange={(e) => setClientData({ ...clientData, direccion: e.target.value })}
-                  placeholder="Calle, Número, Distrito (Huancayo)"
-                  className="input-glass pl-4"
-                />
-              </div>
-
-              <div>
-                <label className="block font-montserrat text-label-caps text-on-surface-variant mb-1 uppercase tracking-widest">
-                  Método de Pago
-                </label>
-                <select
-                  value={clientData.metodoPago}
-                  onChange={(e) => setClientData({ ...clientData, metodoPago: e.target.value })}
-                  className="w-full bg-surface-container border border-outline-variant/30 text-white rounded px-3 py-2 focus:outline-none"
-                >
-                  <option value="transferencia">Transferencia Bancaria BCP/BBVA</option>
-                  <option value="yape_plin">Yape / Plin</option>
-                  <option value="tarjeta">Pago con Tarjeta Crédito/Débito</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="border-t border-outline-variant/10 pt-4 mt-6 space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="font-montserrat text-body-sm text-on-surface-variant">Total del Pedido:</span>
-                <span className="font-poppins text-headline-md text-primary font-bold">
-                  S/. {total.toLocaleString("es-PE")}
-                </span>
-              </div>
-
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setCheckoutMode(false)}
-                  className="btn-secondary flex-1 py-2.5 text-xs font-bold uppercase tracking-wider justify-center"
-                >
-                  Atrás
-                </button>
-                <button
-                  type="submit"
-                  disabled={creatingQuote}
-                  className="btn-primary flex-1 py-2.5 text-xs font-bold uppercase tracking-wider justify-center"
-                >
-                  {creatingQuote ? "Procesando..." : "Confirmar Pedido"}
-                </button>
-              </div>
-            </div>
-          </form>
         ) : (
-          /* SCREEN 4: Normal Cart List */
+          /* SCREEN 2: Normal Cart List */
           <div className="flex-grow flex flex-col justify-between min-h-0">
             {/* Scrollable list */}
             <div className="flex-grow overflow-y-auto p-6 space-y-4">
@@ -402,7 +244,10 @@ export default function CartSidebar() {
 
                 <div className="flex flex-col gap-2">
                   <button
-                    onClick={() => setCheckoutMode(true)}
+                    onClick={() => {
+                      setCartOpen(false);
+                      router.push("/checkout");
+                    }}
                     className="btn-primary w-full py-3 text-xs font-bold uppercase tracking-widest flex justify-center items-center gap-2"
                   >
                     Proceder al Checkout
@@ -451,7 +296,7 @@ export default function CartSidebar() {
 
           <div className="mb-6">
             <h3 className="font-bold text-sm uppercase mb-2 border-b border-gray-300 pb-1">Cliente</h3>
-            <p className="text-xs font-semibold">{clientData.nombre || user?.email || "Cliente General"}</p>
+            <p className="text-xs font-semibold">{user?.displayName || user?.email || "Cliente General"}</p>
           </div>
 
           <table className="w-full text-left text-xs mb-8 border-collapse">

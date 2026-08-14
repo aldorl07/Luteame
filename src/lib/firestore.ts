@@ -164,3 +164,76 @@ export async function getBuildDetails(buildId: string): Promise<any | null> {
   return { id: snap.id, ...snap.data() };
 }
 
+// ─── Orders / Pedidos ──────────────────────────────────────────────────────────
+
+export function subscribeToAllOrders(callback: (orders: any[]) => void): Unsubscribe {
+  const q = query(collection(db, "pedidos"));
+  return onSnapshot(q, (snapshot) => {
+    const orders = snapshot.docs.map((d) => ({
+      id: d.id,
+      ...d.data(),
+    })) as any[];
+    // Sort client-side to avoid index requirements on new DBs
+    orders.sort((a, b) => {
+      const dateA = a.fecha?.seconds || 0;
+      const dateB = b.fecha?.seconds || 0;
+      return dateB - dateA;
+    });
+    callback(orders);
+  });
+}
+
+export async function updateOrderStatus(orderId: string, status: string): Promise<void> {
+  const ref = doc(db, "pedidos", orderId);
+  await setDoc(ref, { estado: status }, { merge: true });
+}
+
+// ─── Support Tickets (All) ───────────────────────────────────────────────────
+
+export function subscribeToAllTickets(callback: (tickets: any[]) => void): Unsubscribe {
+  const q = query(collection(db, "tickets_soporte"));
+  return onSnapshot(q, (snapshot) => {
+    const tickets = snapshot.docs.map((d) => ({
+      id: d.id,
+      ...d.data(),
+    })) as any[];
+    // Sort client-side
+    tickets.sort((a, b) => {
+      const dateA = a.fechaCreacion?.seconds || 0;
+      const dateB = b.fechaCreacion?.seconds || 0;
+      return dateB - dateA;
+    });
+    callback(tickets);
+  });
+}
+
+export async function resolveTicket(
+  ticketId: string,
+  data: { solucion?: string; observaciones?: string; estado: string }
+): Promise<void> {
+  const ref = doc(db, "tickets_soporte", ticketId);
+  await setDoc(ref, data, { merge: true });
+}
+
+// ─── Seed Database ───────────────────────────────────────────────────────────
+
+export async function seedDatabase(products: any[], mockBuild: any): Promise<void> {
+  // 1. Seed products
+  for (const product of products) {
+    await addDoc(collection(db, "productos"), {
+      ...product,
+      fechaCreacion: serverTimestamp(),
+    });
+  }
+
+  // 2. Seed mock warranty build (remove LUTE- prefix just in case)
+  const cleanId = mockBuild.id.replace("LUTE-", "");
+  await setDoc(doc(db, "equipos_ensamblados", cleanId), {
+    clienteNombre: mockBuild.clienteNombre,
+    fechaEnsamblaje: serverTimestamp(),
+    garantiaVencimiento: new Date(Date.now() + 2 * 365 * 24 * 60 * 60 * 1000), // 2 years warranty
+    componentes: mockBuild.componentes,
+  });
+}
+
+
