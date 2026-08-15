@@ -78,7 +78,7 @@ Conversa con el usuario resolviendo sus dudas y recomendando el hardware adecuad
 
     // We can inject the system instruction directly into the model configuration
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: "gemini-3.5-flash",
       systemInstruction: systemPrompt,
     });
 
