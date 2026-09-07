@@ -280,16 +280,76 @@ body {
 
 /* Print Optimization */
 @media print {
-  body {
+  html, body {
     background: #ffffff !important;
     color: #000000 !important;
     background-image: none !important;
+    height: auto !important;
+    min-height: 100% !important;
+    overflow: visible !important;
   }
-  header, footer, main, button, .no-print {
+
+  nav,
+  header,
+  footer,
+  canvas,
+  button,
+  .no-print,
+  [aria-hidden="true"],
+  .glass-panel,
+  .glass-card,
+  #chat-floating-button,
+  #chat-window {
     display: none !important;
   }
+
+  main {
+    display: block !important;
+    position: static !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  .section-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
   .print-only {
     display: block !important;
+    position: relative !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    padding: 24px !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+  }
+
+  .print-only * {
+    color: #000000 !important;
+    border-color: #d1d5db !important;
+  }
+
+  .print-only .text-gray-600,
+  .print-only .text-gray-500,
+  .print-only .text-gray-400 {
+    color: #4b5563 !important;
+  }
+
+  .print-only .text-gray-700 {
+    color: #374151 !important;
+  }
+
+  .print-only .border-black {
+    border-color: #000000 !important;
+  }
+
+  .print-only .bg-white {
+    background-color: #ffffff !important;
   }
 }
 

@@ -207,7 +207,7 @@ export default function CheckoutPage() {
             </div>
             <div className="flex justify-between pt-1">
               <span className="text-on-surface-variant font-bold">Monto Total:</span>
-              <span className="text-primary text-base font-poppins font-bold">S/. {total.toLocaleString("es-PE")}</span>
+              <span className="text-primary text-base font-poppins font-bold">S/. {createdOrderData.total.toLocaleString("es-PE")}</span>
             </div>
           </div>
 
@@ -294,15 +294,15 @@ export default function CheckoutPage() {
             <div className="w-64 text-xs space-y-1">
               <div className="flex justify-between">
                 <span>Subtotal (82%):</span>
-                <span>S/. {(total / 1.18).toLocaleString("es-PE", { maximumFractionDigits: 2 })}</span>
+                <span>S/. {(createdOrderData.total / 1.18).toLocaleString("es-PE", { maximumFractionDigits: 2 })}</span>
               </div>
               <div className="flex justify-between">
                 <span>IGV (18%):</span>
-                <span>S/. {(total - total / 1.18).toLocaleString("es-PE", { maximumFractionDigits: 2 })}</span>
+                <span>S/. {(createdOrderData.total - createdOrderData.total / 1.18).toLocaleString("es-PE", { maximumFractionDigits: 2 })}</span>
               </div>
               <div className="flex justify-between font-bold text-sm border-t border-gray-300 pt-1">
                 <span>Total:</span>
-                <span>S/. {total.toLocaleString("es-PE")}</span>
+                <span>S/. {createdOrderData.total.toLocaleString("es-PE")}</span>
               </div>
             </div>
           </div>
