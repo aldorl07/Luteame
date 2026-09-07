@@ -9,22 +9,22 @@ import CartSidebar from "./CartSidebar";
 import ChatFloatingButton from "../chat/ChatFloatingButton";
 import ChatWindow from "../chat/ChatWindow";
 
-const AUTH_ROUTES = ["/login", "/register", "/recover", "/auth"];
+const STANDALONE_ROUTES = ["/login", "/register", "/recover", "/auth", "/admin"];
 
 export default function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isAuthPage = AUTH_ROUTES.some((r) => pathname.startsWith(r));
+  const isStandalone = STANDALONE_ROUTES.some((r) => pathname.startsWith(r));
 
   return (
     <>
-      {!isAuthPage && <Navbar />}
-      <main className={`relative z-10 flex-grow ${isAuthPage ? "" : ""}`}>
+      {!isStandalone && <Navbar />}
+      <main className="relative z-10 flex-grow">
         {children}
       </main>
-      {!isAuthPage && <CartSidebar />}
-      {!isAuthPage && <ChatWindow />}
-      {!isAuthPage && <ChatFloatingButton />}
-      {!isAuthPage && <Footer />}
+      {!isStandalone && <CartSidebar />}
+      {!isStandalone && <ChatWindow />}
+      {!isStandalone && <ChatFloatingButton />}
+      {!isStandalone && <Footer />}
     </>
   );
 }

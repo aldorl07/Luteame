@@ -39,30 +39,44 @@ export default function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full" style={{ backdropFilter: "blur(12px)", background: "rgba(24,17,28,0.82)" }}>
+    <header className="sticky top-0 z-50 w-full" style={{ backdropFilter: "blur(12px)", background: "rgba(24,17,28,0.85)" }}>
       <div className="section-container flex justify-between items-center h-[80px]">
         {/* Brand */}
-        <Link href="/" className="font-poppins text-2xl font-extrabold text-primary tracking-tight hover:text-glow transition-all">
+        <Link href="/" className="shrink-0 mr-4 lg:mr-8 font-poppins text-2xl font-extrabold text-primary tracking-tight hover:text-glow transition-all">
           Luteame
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden lg:flex items-center gap-4 xl:gap-7 flex-nowrap">
           {navItems.map(({ href, label }) => {
             const isAdminLink = href === "/admin";
             const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
+
+            if (isAdminLink) {
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`whitespace-nowrap px-3 py-1.5 rounded-lg border text-xs font-montserrat font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all duration-300 ${
+                    isActive
+                      ? "bg-tertiary/25 border-tertiary text-tertiary shadow-[0_0_15px_rgba(255,183,77,0.35)]"
+                      : "bg-tertiary/10 border-tertiary/40 text-tertiary hover:bg-tertiary/20 hover:border-tertiary hover:shadow-[0_0_12px_rgba(255,183,77,0.25)]"
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-sm">admin_panel_settings</span>
+                  Portal Admin
+                </Link>
+              );
+            }
+
             return (
               <Link
                 key={href}
                 href={href}
-                className={`font-montserrat text-label-caps font-bold tracking-widest uppercase transition-colors duration-300 pb-1 ${
+                className={`whitespace-nowrap font-montserrat text-xs xl:text-[13px] font-bold tracking-widest uppercase transition-colors duration-300 pb-1 ${
                   isActive
-                    ? isAdminLink
-                      ? "text-tertiary border-b-2 border-tertiary text-glow"
-                      : "text-primary border-b-2 border-primary"
-                    : isAdminLink
-                      ? "text-tertiary/80 hover:text-tertiary hover:text-glow"
-                      : "text-on-surface-variant hover:text-primary"
+                    ? "text-primary border-b-2 border-primary"
+                    : "text-on-surface-variant hover:text-primary"
                 }`}
               >
                 {label}
@@ -72,14 +86,14 @@ export default function Navbar() {
         </nav>
 
         {/* Actions */}
-        <div className="flex items-center gap-4">
+        <div className="shrink-0 ml-4 flex items-center gap-3 lg:gap-4">
           {/* Cart */}
           <button
-            className="relative text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
+            className="relative text-on-surface-variant hover:text-primary transition-colors cursor-pointer p-1"
             aria-label="Carrito de compras"
             onClick={() => setCartOpen(!cartOpen)}
           >
-            <span className="material-symbols-outlined">shopping_cart</span>
+            <span className="material-symbols-outlined text-2xl">shopping_cart</span>
             {itemCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-primary-container text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center animate-pulse-glow">
                 {itemCount}
@@ -89,7 +103,7 @@ export default function Navbar() {
 
           <Link
             href="/configurator"
-            className="hidden md:flex btn-primary"
+            className="hidden sm:flex btn-primary text-xs py-2.5 px-4"
           >
             Armar Setup
           </Link>
@@ -99,28 +113,28 @@ export default function Navbar() {
             user ? (
               <button
                 onClick={handleSignOut}
-                className="hidden md:flex items-center gap-2 text-on-surface-variant hover:text-primary font-montserrat text-label-caps font-bold tracking-widest uppercase transition-colors"
+                className="hidden sm:flex items-center gap-1.5 text-on-surface-variant hover:text-primary font-montserrat text-xs font-bold tracking-widest uppercase transition-colors px-2 py-1"
               >
-                <span className="material-symbols-outlined text-sm">logout</span>
+                <span className="material-symbols-outlined text-base">logout</span>
                 Salir
               </button>
             ) : (
               <Link
                 href="/login"
-                className="hidden md:flex btn-primary"
+                className="hidden sm:flex btn-secondary text-xs py-2 px-3"
               >
-                Iniciar Sesión
+                Ingresar
               </Link>
             )
           )}
 
-          {/* Mobile menu toggle */}
+          {/* Mobile/Tablet menu toggle */}
           <button
-            className="md:hidden text-on-surface-variant hover:text-primary transition-colors"
+            className="lg:hidden text-on-surface-variant hover:text-primary transition-colors p-1"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Menú"
           >
-            <span className="material-symbols-outlined">
+            <span className="material-symbols-outlined text-2xl">
               {mobileOpen ? "close" : "menu"}
             </span>
           </button>
