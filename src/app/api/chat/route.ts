@@ -32,6 +32,7 @@ Tu objetivo es guiar a los clientes para armar la PC de sus sueños con asesorí
 
 REGLAS DE COMPORTAMIENTO:
 1. Sé amable, entusiasta y con tono "gamer" pero profesional. Usa términos peruanos sutilmente si es oportuno, y menciona que la garantía y el armado son locales en Huancayo.
+   Sé conciso: responde en máximo 3-4 párrafos o una lista corta. Ve directo al punto, sin introducciones largas ni repetir lo que el usuario ya dijo.
 2. Si te preguntan por armados de PC, SIEMPRE recomienda productos del catálogo real que te proporcionamos a continuación.
 3. Evalúa la compatibilidad basándote en las especificaciones del catálogo:
    - Sockets: El CPU y la Placa Madre deben tener el mismo socket (ej. AM5 con AM5, LGA1700 con LGA1700).
@@ -85,7 +86,7 @@ Conversa con el usuario resolviendo sus dudas y recomendando el hardware adecuad
     const result = await model.generateContent({
       contents,
       generationConfig: {
-        maxOutputTokens: 2048,
+        maxOutputTokens: 1024,
         temperature: 0.7,
       },
     });

@@ -4,11 +4,10 @@
 import { useState, useEffect } from "react";
 import { useConfiguratorStore } from "@/store/configuratorStore";
 import { useCartStore } from "@/store/cartStore";
-import { getAllProducts } from "@/lib/firestore";
+import { getAllProducts, createLead, getLeadById } from "@/lib/firestore";
 import { generateRecommendation } from "@/lib/recommendationEngine";
-import type { Product, NecesidadUso, PresupuestoRango, ProductCategory } from "@/types";
+import type { Product, NecesidadUso, PresupuestoRango, ProductCategory, LeadSetupSummary } from "@/types";
 import OptionGrid from "@/components/configurator/OptionGrid";
-import { checkCompatibility } from "@/lib/compatibilityRules";
 
 const PRESUPUESTOS: PresupuestoRango[] = [
   { id: "bajo", label: "S/. 2,000 - S/. 3,000 (Gama Entrada)", min: 2000, max: 3000 },
@@ -51,7 +50,6 @@ export default function ConfiguratorPage() {
   const setStep = useConfiguratorStore((s) => s.setStep);
   const setUsoYPresupuesto = useConfiguratorStore((s) => s.setUsoYPresupuesto);
   const selectProduct = useConfiguratorStore((s) => s.selectProduct);
-  const clearSelection = useConfiguratorStore((s) => s.clearSelection);
   const clearAll = useConfiguratorStore((s) => s.clearAll);
   const setRecommendedSetup = useConfiguratorStore((s) => s.setRecommendedSetup);
 
@@ -63,6 +61,26 @@ export default function ConfiguratorPage() {
 
   const [selectedUso, setSelectedUso] = useState<NecesidadUso | null>(null);
   const [selectedPresupuesto, setSelectedPresupuesto] = useState<PresupuestoRango | null>(null);
+
+  // ─── CRM & Quote Modal States ───
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+  const [quoteName, setQuoteName] = useState("");
+  const [quotePhone, setQuotePhone] = useState("");
+  const [quoteEmail, setQuoteEmail] = useState("");
+  const [quoteCity, setQuoteCity] = useState("Huancayo");
+  const [quoteNotes, setQuoteNotes] = useState("");
+  const [isSubmittingQuote, setIsSubmittingQuote] = useState(false);
+  const [quoteSuccessData, setQuoteSuccessData] = useState<{ id: string; whatsappUrl: string } | null>(null);
+
+  // ─── Re-engagement Banner States ───
+  const [pendingQuote, setPendingQuote] = useState<{
+    id: string;
+    clienteNombre: string;
+    precioTotal: number;
+    fecha: string;
+    setup: any;
+  } | null>(null);
+  const [isBannerDismissed, setIsBannerDismissed] = useState(false);
 
   // Load all products initially for recommendation engine
   useEffect(() => {
@@ -85,11 +103,53 @@ export default function ConfiguratorPage() {
     if (presupuestoRango) setSelectedPresupuesto(presupuestoRango);
   }, [usoRecomendado, presupuestoRango]);
 
+  // Check for saved quote in localStorage or URL query param on mount
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // 1. Check URL query param ?quoteId=...
+    const urlParams = new URLSearchParams(window.location.search);
+    const quoteIdParam = urlParams.get("quoteId");
+
+    if (quoteIdParam) {
+      getLeadById(quoteIdParam).then((lead) => {
+        if (lead && lead.setupConfigurado) {
+          setPendingQuote({
+            id: lead.id,
+            clienteNombre: lead.clienteNombre,
+            precioTotal: lead.setupConfigurado.precioTotal,
+            fecha: new Date().toLocaleDateString("es-PE"),
+            setup: lead.setupConfigurado.componentes,
+          });
+        }
+      }).catch(console.error);
+    } else {
+      // 2. Check localStorage
+      const saved = localStorage.getItem("luteame_saved_quote");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed && parsed.precioTotal) {
+            setPendingQuote(parsed);
+          }
+        } catch (e) {
+          console.error("Error parsing saved quote:", e);
+        }
+      }
+    }
+  }, []);
+
+  const handleRestorePendingQuote = () => {
+    if (!pendingQuote || !pendingQuote.setup) return;
+    setRecommendedSetup(pendingQuote.setup);
+    setStep(2); // Go to summary
+    setIsBannerDismissed(true);
+  };
+
   const handleGenerateRecommendation = () => {
     if (!selectedUso || !selectedPresupuesto) return;
     setUsoYPresupuesto(selectedUso, selectedPresupuesto);
 
-    // Call recommendation engine
     const recommendedSetup = generateRecommendation(allProducts, selectedUso, selectedPresupuesto);
     setRecommendedSetup(recommendedSetup);
     setStep(1);
@@ -100,7 +160,6 @@ export default function ConfiguratorPage() {
   };
 
   const handleAddSetupToCart = () => {
-    // Collect all valid components
     const finalSetup: Record<string, Product> = {};
     Object.entries(selections).forEach(([cat, prod]) => {
       if (prod) finalSetup[cat] = prod;
@@ -124,16 +183,146 @@ export default function ConfiguratorPage() {
     });
 
     alert("¡Tu PC configurada ha sido agregada al carrito!");
-    routerToCart();
   };
 
-  const routerToCart = () => {
-    // We will open the cart sidebar or redirect to shop.
-    // For now we'll notify the user.
+  // ─── Handle Lead Submission (CRM) ───
+  const handleSubmitQuote = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!quoteName.trim() || !quotePhone.trim()) {
+      alert("Por favor completa tu nombre y número de WhatsApp.");
+      return;
+    }
+
+    setIsSubmittingQuote(true);
+
+    try {
+      // Build setup summary
+      const validComponents: Record<string, { id: string; nombre: string; categoria: ProductCategory; precio: number }> = {};
+      Object.entries(selections).forEach(([cat, prod]) => {
+        if (prod) {
+          validComponents[cat] = {
+            id: prod.id,
+            nombre: prod.nombre,
+            categoria: prod.categoria,
+            precio: prod.precio,
+          };
+        }
+      });
+
+      const setupSummary: LeadSetupSummary = {
+        componentes: validComponents,
+        precioTotal: totalPrice,
+        usoRecomendado: usoRecomendado || "Personalizado",
+        compatible: compatibility.compatible,
+      };
+
+      const leadId = await createLead({
+        clienteNombre: quoteName.trim(),
+        clienteTelefono: quotePhone.trim(),
+        clienteEmail: quoteEmail.trim() || undefined,
+        clienteCiudad: quoteCity.trim(),
+        origen: "configurador",
+        consultaTexto: quoteNotes.trim() || undefined,
+        setupConfigurado: setupSummary,
+        precioEstimado: totalPrice,
+        estado: "nuevo",
+        prioridad: totalPrice > 5000 ? "alta" : "media",
+        proximoSeguimiento: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      });
+
+      // Save locally for re-engagement
+      const localQuoteData = {
+        id: leadId,
+        clienteNombre: quoteName.trim(),
+        precioTotal: totalPrice,
+        fecha: new Date().toLocaleDateString("es-PE"),
+        setup: selections,
+      };
+      localStorage.setItem("luteame_saved_quote", JSON.stringify(localQuoteData));
+
+      // Build WhatsApp message
+      const code = `LUTE-${leadId.slice(0, 6).toUpperCase()}`;
+      const cpuName = selections.procesadores?.nombre || "N/A";
+      const gpuName = selections.graficas?.nombre || "Gráficos Integrados";
+      const ramName = selections.ram?.nombre || "N/A";
+
+      const wspMessage = `¡Hola Luteame! 👋 Acabo de armar mi setup en la web y deseo asesoría técnica y confirmar mi cotización.
+
+📄 *Código de Cotización:* #${code}
+👤 *Cliente:* ${quoteName}
+📍 *Ciudad:* ${quoteCity}
+💰 *Total Estimado:* S/. ${totalPrice.toLocaleString("es-PE")}
+
+🛠️ *Configuración:*
+• CPU: ${cpuName}
+• GPU: ${gpuName}
+• RAM: ${ramName}
+
+${quoteNotes.trim() ? `💬 *Consulta adicional:* "${quoteNotes.trim()}"` : ""}`;
+
+      const whatsappUrl = `https://wa.me/51964000000?text=${encodeURIComponent(wspMessage)}`;
+
+      setQuoteSuccessData({ id: code, whatsappUrl });
+    } catch (error) {
+      console.error("Error creating lead:", error);
+      alert("Hubo un problema registrando tu cotización. Por favor intenta nuevamente.");
+    } finally {
+      setIsSubmittingQuote(false);
+    }
   };
 
   return (
     <div className="section-container py-brand-md pb-brand-xl">
+      {/* ─── Re-engagement Notification Banner ─── */}
+      {pendingQuote && !isBannerDismissed && (
+        <div className="mb-6 p-4 rounded-xl border border-primary/40 bg-gradient-to-r from-primary-container/20 via-surface-container-high/60 to-primary-container/10 backdrop-blur-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4 animate-fade-in shadow-[0_0_25px_rgba(227,181,255,0.15)]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/20 text-primary flex items-center justify-center shrink-0">
+              <span className="material-symbols-outlined text-2xl">restore_page</span>
+            </div>
+            <div>
+              <p className="font-montserrat text-xs font-bold text-primary uppercase tracking-wider">
+                ¿Deseas continuar con tu Setup Guardado?
+              </p>
+              <p className="font-poppins text-sm text-white font-medium">
+                {pendingQuote.clienteNombre ? `${pendingQuote.clienteNombre}, ` : ""}
+                tienes una cotización por{" "}
+                <span className="text-primary font-bold">S/. {pendingQuote.precioTotal.toLocaleString("es-PE")}</span>{" "}
+                ({pendingQuote.fecha}).
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 self-end md:self-auto shrink-0">
+            <button
+              onClick={handleRestorePendingQuote}
+              className="px-4 py-2 rounded-lg bg-primary text-surface-container-lowest font-montserrat text-xs font-bold uppercase tracking-wider hover:brightness-110 flex items-center gap-1.5 transition-all shadow-md"
+            >
+              <span className="material-symbols-outlined text-base">arrow_forward</span>
+              Restaurar Setup
+            </button>
+            <a
+              href={`https://wa.me/51964000000?text=${encodeURIComponent(
+                `Hola Luteame, quiero retomar mi cotización guardada por S/. ${pendingQuote.precioTotal.toLocaleString("es-PE")}.`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-2 rounded-lg border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 font-montserrat text-xs font-bold flex items-center gap-1 hover:bg-emerald-500/20 transition-all"
+            >
+              <span className="material-symbols-outlined text-base text-emerald-400">chat</span>
+              Asesoría WhatsApp
+            </a>
+            <button
+              onClick={() => setIsBannerDismissed(true)}
+              className="p-1.5 text-on-surface-variant hover:text-white transition-colors"
+              title="Cerrar aviso"
+            >
+              <span className="material-symbols-outlined text-lg">close</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Step Stepper Header */}
       <div className="flex items-center justify-between border-b border-outline-variant/10 pb-6 mb-8">
         <div>
@@ -141,7 +330,7 @@ export default function ConfiguratorPage() {
             Configurador de Setup Inteligente
           </h1>
           <p className="font-montserrat text-body-sm text-on-surface-variant mt-1">
-            "El setup de tus sueños, simplificado."
+            "El setup de tus sueños, simplificado con garantía local en Huancayo."
           </p>
         </div>
 
@@ -471,7 +660,7 @@ export default function ConfiguratorPage() {
                     <span className="material-symbols-outlined text-[16px]">
                       {compatibility.compatible ? "verified" : "warning"}
                     </span>
-                    {compatibility.compatible ? "100% Compatible y Listo" : "Requiere Revisión"}
+                    {compatibility.compatible ? "100% Compatible y Listo para Armado" : "Requiere Revisión"}
                   </p>
                 </div>
 
@@ -491,24 +680,212 @@ export default function ConfiguratorPage() {
           <div className="flex flex-wrap justify-between items-center gap-4 border-t border-outline-variant/10 pt-4">
             <button
               onClick={() => setStep(1)}
-              className="btn-secondary flex items-center gap-2 py-3 px-6 text-xs font-bold uppercase tracking-wider"
+              className="btn-secondary flex items-center gap-2 py-3 px-5 text-xs font-bold uppercase tracking-wider"
             >
               <span className="material-symbols-outlined text-base">arrow_back</span>
-              Volver a Personalizar
+              Volver a Modificar
             </button>
 
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
+              {/* Botón CRM: Solicitar Cotización & Asesoría VIP */}
+              <button
+                onClick={() => setIsQuoteModalOpen(true)}
+                className="px-5 py-3 rounded-lg border border-primary/50 bg-primary/10 text-primary font-montserrat text-xs font-bold uppercase tracking-wider hover:bg-primary/20 flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(227,181,255,0.15)]"
+              >
+                <span className="material-symbols-outlined text-base text-primary">send_and_archive</span>
+                Solicitar Cotización & Asesoría VIP
+              </button>
+
               <button
                 onClick={handleAddSetupToCart}
-                className="btn-primary flex items-center gap-2 py-3 px-8 text-xs font-bold uppercase tracking-wider"
+                className="btn-primary flex items-center gap-2 py-3 px-6 text-xs font-bold uppercase tracking-wider"
               >
-                Agregar Setup al Carrito
+                Agregar al Carrito
                 <span className="material-symbols-outlined text-base">shopping_cart</span>
               </button>
             </div>
           </div>
         </div>
       )}
+
+      {/* ─── MODAL: SOLICITAR COTIZACIÓN & ASESORÍA VIP (CRM) ─── */}
+      {isQuoteModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="glass-panel max-w-lg w-full p-6 md:p-8 rounded-2xl border border-primary/30 relative animate-fade-in shadow-2xl">
+            {/* Close button */}
+            <button
+              onClick={() => {
+                setIsQuoteModalOpen(false);
+                setQuoteSuccessData(null);
+              }}
+              className="absolute top-4 right-4 text-on-surface-variant hover:text-white p-1"
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
+
+            {!quoteSuccessData ? (
+              <>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-primary/20 text-primary flex items-center justify-center">
+                    <span className="material-symbols-outlined text-2xl">support_agent</span>
+                  </div>
+                  <div>
+                    <h3 className="font-poppins text-title-lg font-bold text-white">
+                      Asesoría & Cotización VIP
+                    </h3>
+                    <p className="font-montserrat text-xs text-on-surface-variant">
+                      Recibe asesoría directa con un técnico de Luteame en Huancayo.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-surface-container-low/60 rounded-lg p-3 mb-5 border border-outline-variant/10 text-xs font-montserrat flex justify-between items-center">
+                  <span className="text-on-surface-variant">Total del Setup Cotizado:</span>
+                  <span className="text-primary font-bold text-sm font-mono">S/. {totalPrice.toLocaleString("es-PE")}</span>
+                </div>
+
+                <form onSubmit={handleSubmitQuote} className="space-y-4">
+                  <div>
+                    <label className="block font-montserrat text-xs font-semibold text-white mb-1">
+                      Nombre y Apellidos *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Ej. Aldo Ramos"
+                      value={quoteName}
+                      onChange={(e) => setQuoteName(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg bg-surface-container-lowest border border-outline-variant/30 text-white font-montserrat text-xs focus:border-primary focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block font-montserrat text-xs font-semibold text-white mb-1">
+                        WhatsApp / Celular *
+                      </label>
+                      <input
+                        type="tel"
+                        required
+                        placeholder="Ej. 964123456"
+                        value={quotePhone}
+                        onChange={(e) => setQuotePhone(e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg bg-surface-container-lowest border border-outline-variant/30 text-white font-montserrat text-xs focus:border-primary focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-montserrat text-xs font-semibold text-white mb-1">
+                        Ciudad / Distrito
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Ej. Huancayo, El Tambo..."
+                        value={quoteCity}
+                        onChange={(e) => setQuoteCity(e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg bg-surface-container-lowest border border-outline-variant/30 text-white font-montserrat text-xs focus:border-primary focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-montserrat text-xs font-semibold text-white mb-1">
+                      Correo Electrónico (opcional)
+                    </label>
+                    <input
+                      type="email"
+                      placeholder="ejemplo@correo.com"
+                      value={quoteEmail}
+                      onChange={(e) => setQuoteEmail(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg bg-surface-container-lowest border border-outline-variant/30 text-white font-montserrat text-xs focus:border-primary focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-montserrat text-xs font-semibold text-white mb-1">
+                      ¿Tienes alguna duda o requerimiento especial?
+                    </label>
+                    <textarea
+                      rows={2}
+                      placeholder="Ej. ¿Puedo pagar una parte con tarjeta y otra en efectivo? ¿Incluye instalación de programas?"
+                      value={quoteNotes}
+                      onChange={(e) => setQuoteNotes(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg bg-surface-container-lowest border border-outline-variant/30 text-white font-montserrat text-xs focus:border-primary focus:outline-none resize-none"
+                    />
+                  </div>
+
+                  <div className="pt-2 flex gap-3 justify-end">
+                    <button
+                      type="button"
+                      onClick={() => setIsQuoteModalOpen(false)}
+                      className="px-4 py-2.5 rounded-lg border border-outline-variant/30 text-xs font-montserrat font-bold text-on-surface-variant hover:text-white"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmittingQuote}
+                      className="btn-primary flex items-center gap-2 py-2.5 px-6 text-xs font-bold uppercase tracking-wider disabled:opacity-50"
+                    >
+                      {isSubmittingQuote ? (
+                        <>
+                          <span className="material-symbols-outlined animate-spin text-sm">progress_activity</span>
+                          Guardando Cotización...
+                        </>
+                      ) : (
+                        <>
+                          Guardar y Recibir Asesoría
+                          <span className="material-symbols-outlined text-sm">send</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </>
+            ) : (
+              /* Success State */
+              <div className="text-center py-4 space-y-4">
+                <div className="w-14 h-14 rounded-full bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center">
+                  <span className="material-symbols-outlined text-3xl">check_circle</span>
+                </div>
+                <div>
+                  <h3 className="font-poppins text-headline-sm font-bold text-white">
+                    ¡Cotización Registrada con Éxito!
+                  </h3>
+                  <p className="font-montserrat text-xs text-on-surface-variant mt-1">
+                    Código de seguimiento: <span className="text-primary font-mono font-bold">#{quoteSuccessData.id}</span>
+                  </p>
+                </div>
+
+                <div className="p-4 bg-surface-container-low/40 rounded-xl border border-outline-variant/10 text-xs font-montserrat text-on-surface-variant leading-relaxed text-left">
+                  Tu configuración ha sido enviada al equipo comercial de Luteame. Puedes abrir WhatsApp directamente ahora mismo para chatear con un asesor asignado.
+                </div>
+
+                <div className="flex flex-col gap-2 pt-2">
+                  <a
+                    href={quoteSuccessData.whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-3 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-montserrat text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-900/30"
+                  >
+                    <span className="material-symbols-outlined text-base">chat</span>
+                    Abrir Chat en WhatsApp con mi Cotización
+                  </a>
+                  <button
+                    onClick={() => {
+                      setIsQuoteModalOpen(false);
+                      setQuoteSuccessData(null);
+                    }}
+                    className="w-full py-2.5 rounded-lg border border-outline-variant/20 text-on-surface-variant hover:text-white font-montserrat text-xs font-bold transition-all"
+                  >
+                    Continuar en la Web
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

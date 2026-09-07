@@ -104,3 +104,58 @@ export const STEP_ICONS: Record<number, string> = {
   2: "fact_check",
 };
 
+// ─── CRM & Lead Types ────────────────────────────────────────────────────────
+export type LeadStatus =
+  | "nuevo"
+  | "en_contacto"
+  | "seguimiento_pendiente"
+  | "cotizado"
+  | "ganado"
+  | "perdido";
+
+export type FollowUpType =
+  | "recordatorio_1"
+  | "ajuste_presupuesto"
+  | "promocion_cierre"
+  | "llamada"
+  | "mensaje_whatsapp"
+  | "correo"
+  | "nota_interna";
+
+export interface FollowUpRecord {
+  id: string;
+  fecha: string; // ISO date string
+  tipo: FollowUpType;
+  comentario: string;
+  autor: string;
+}
+
+export interface LeadSetupSummary {
+  componentes: Record<string, { id: string; nombre: string; categoria: ProductCategory; precio: number }>;
+  precioTotal: number;
+  usoRecomendado?: NecesidadUso | string;
+  compatible: boolean;
+}
+
+export interface Lead {
+  id: string;
+  clienteNombre: string;
+  clienteTelefono: string;
+  clienteEmail?: string;
+  clienteCiudad?: string;
+  origen: "configurador" | "tienda" | "soporte" | "chat" | "manual";
+  consultaTexto?: string;
+  setupConfigurado?: LeadSetupSummary;
+  precioEstimado: number;
+  estado: LeadStatus;
+  prioridad: "baja" | "media" | "alta";
+  intentosSeguimiento: number;
+  ultimoContacto?: string;
+  proximoSeguimiento?: string;
+  historialSeguimiento: FollowUpRecord[];
+  notasInternas?: string[];
+  fechaCreacion: Timestamp | any;
+  fechaActualizacion?: Timestamp | any;
+}
+
+

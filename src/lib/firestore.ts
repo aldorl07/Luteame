@@ -15,7 +15,7 @@ import {
   QueryConstraint,
 } from "firebase/firestore";
 import { db } from "./firebase";
-import type { Product, UserProfile, Setup, ProductCategory } from "@/types";
+import type { Product, UserProfile, Setup, ProductCategory, Lead, LeadStatus, FollowUpRecord } from "@/types";
 
 // ─── Users ────────────────────────────────────────────────────────────────────
 
@@ -236,4 +236,115 @@ export async function seedDatabase(products: any[], mockBuild: any): Promise<voi
   });
 }
 
+// ─── CRM & Leads / Pipeline de Ventas ─────────────────────────────────────────
 
+export async function createLead(
+  leadData: Omit<Lead, "id" | "fechaCreacion" | "fechaActualizacion" | "intentosSeguimiento" | "historialSeguimiento">
+): Promise<string> {
+  const ref = await addDoc(collection(db, "leads"), {
+    ...leadData,
+    intentosSeguimiento: 0,
+    historialSeguimiento: [],
+    notasInternas: leadData.notasInternas || [],
+    fechaCreacion: serverTimestamp(),
+    fechaActualizacion: serverTimestamp(),
+  });
+  return ref.id;
+}
+
+export function subscribeToAllLeads(callback: (leads: Lead[]) => void): Unsubscribe {
+  const q = query(collection(db, "leads"));
+  return onSnapshot(q, (snapshot) => {
+    const leads = snapshot.docs.map((d) => ({
+      id: d.id,
+      ...d.data(),
+    })) as Lead[];
+
+    // Sort descending by creation date or update date
+    leads.sort((a, b) => {
+      const dateA = a.fechaCreacion?.seconds || (a.fechaCreacion ? new Date(a.fechaCreacion).getTime() / 1000 : 0);
+      const dateB = b.fechaCreacion?.seconds || (b.fechaCreacion ? new Date(b.fechaCreacion).getTime() / 1000 : 0);
+      return dateB - dateA;
+    });
+
+    callback(leads);
+  });
+}
+
+export async function getLeadById(leadId: string): Promise<Lead | null> {
+  const snap = await getDoc(doc(db, "leads", leadId));
+  if (!snap.exists()) return null;
+  return { id: snap.id, ...snap.data() } as Lead;
+}
+
+export async function updateLeadStatus(
+  leadId: string,
+  status: LeadStatus,
+  proximoSeguimiento?: string
+): Promise<void> {
+  const ref = doc(db, "leads", leadId);
+  const updateData: any = {
+    estado: status,
+    fechaActualizacion: serverTimestamp(),
+  };
+  if (proximoSeguimiento !== undefined) {
+    updateData.proximoSeguimiento = proximoSeguimiento;
+  }
+  await setDoc(ref, updateData, { merge: true });
+}
+
+export async function registerFollowUpAction(
+  leadId: string,
+  record: Omit<FollowUpRecord, "id">,
+  nuevoEstado?: LeadStatus,
+  proximoSeguimiento?: string
+): Promise<void> {
+  const leadSnap = await getDoc(doc(db, "leads", leadId));
+  if (!leadSnap.exists()) return;
+
+  const lead = leadSnap.data() as Lead;
+  const newFollowUp: FollowUpRecord = {
+    id: `fu_${Date.now()}`,
+    ...record,
+  };
+
+  const updatedHistorial = [...(lead.historialSeguimiento || []), newFollowUp];
+  const updatePayload: any = {
+    historialSeguimiento: updatedHistorial,
+    intentosSeguimiento: (lead.intentosSeguimiento || 0) + 1,
+    ultimoContacto: new Date().toISOString(),
+    fechaActualizacion: serverTimestamp(),
+  };
+
+  if (nuevoEstado) {
+    updatePayload.estado = nuevoEstado;
+  }
+  if (proximoSeguimiento !== undefined) {
+    updatePayload.proximoSeguimiento = proximoSeguimiento;
+  }
+
+  await setDoc(doc(db, "leads", leadId), updatePayload, { merge: true });
+}
+
+export async function addLeadInternalNote(
+  leadId: string,
+  noteText: string,
+  author: string
+): Promise<void> {
+  const leadSnap = await getDoc(doc(db, "leads", leadId));
+  if (!leadSnap.exists()) return;
+
+  const lead = leadSnap.data() as Lead;
+  const currentNotes = lead.notasInternas || [];
+  const timestampStr = new Date().toLocaleString("es-PE");
+  const formattedNote = `[${timestampStr} - ${author}] ${noteText}`;
+
+  await setDoc(
+    doc(db, "leads", leadId),
+    {
+      notasInternas: [formattedNote, ...currentNotes],
+      fechaActualizacion: serverTimestamp(),
+    },
+    { merge: true }
+  );
+}
