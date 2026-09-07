@@ -82,7 +82,11 @@ export default function ProductCard({ product }: ProductCardProps) {
           <img
             src={product.imagenUrl}
             alt={product.nombre}
-            className="object-contain h-full w-full group-hover:scale-105 transition-transform duration-500"
+            onError={(e) => {
+              // Fallback en caso de bloqueo de red
+              (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=800&auto=format&fit=crop&q=80";
+            }}
+            className="object-contain h-full w-full group-hover:scale-105 transition-transform duration-500 rounded-lg"
           />
         ) : (
           <span className="material-symbols-outlined text-5xl text-on-surface-variant/40">devices</span>
