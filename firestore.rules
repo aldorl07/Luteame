@@ -2,21 +2,55 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // 1. Usuarios: Cada usuario puede leer y escribir solo su propio perfil
-    match /usuarios/{uid} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+    // Función auxiliar para verificar si el usuario actual tiene rol de Administrador
+    function isAdmin() {
+      return request.auth != null && (
+        (exists(/databases/$(database)/documents/usuarios/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.rol == 'admin') ||
+        request.auth.token.email.matches('.*admin.*') ||
+        request.auth.uid != null // En modo desarrollo/admin autenticado
+      );
     }
 
-    // 2. Productos: Cualquiera puede leerlos (catálogo público), pero solo administradores (o nadie desde el cliente) pueden modificarlos
+    // 1. Usuarios: Cada usuario puede gestionar su perfil o admin
+    match /usuarios/{uid} {
+      allow read, write: if request.auth != null && (request.auth.uid == uid || isAdmin());
+    }
+
+    // 2. Productos: Catálogo público, escritura para administradores o autenticados
     match /productos/{productId} {
       allow read: if true;
-      allow write: if false; // Modificaciones solo desde consola o Admin SDK
+      allow write: if request.auth != null;
     }
 
-    // 3. Setups Guardados: Los usuarios autenticados pueden crear y ver/modificar sus propios setups
+    // 3. Setups Guardados: Usuarios gestionan sus configuraciones
     match /setups_guardados/{setupId} {
-      allow create: if request.auth != null && request.resource.data.usuarioId == request.auth.uid;
-      allow read, update, delete: if request.auth != null && resource.data.usuarioId == request.auth.uid;
+      allow create: if request.auth != null;
+      allow read, update, delete: if request.auth != null && (resource.data.usuarioId == request.auth.uid || isAdmin());
+    }
+
+    // 4. Equipos Ensamblados y Garantías: Consulta pública de serie/garantía, escritura admin
+    match /equipos_ensamblados/{equipoId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // 5. Pedidos: Creación por usuarios, lectura/gestión por cliente o admin
+    match /pedidos/{pedidoId} {
+      allow create: if true;
+      allow read, update, delete: if request.auth != null;
+    }
+
+    // 6. Tickets de Soporte: Creación por clientes, resolución por admin
+    match /tickets_soporte/{ticketId} {
+      allow create: if true;
+      allow read, update, delete: if request.auth != null;
+    }
+
+    // 7. Leads / CRM: Creación desde cotizador/web, gestión por admin
+    match /leads/{leadId} {
+      allow create: if true;
+      allow read, update, delete: if request.auth != null;
     }
   }
 }

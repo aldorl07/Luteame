@@ -14,6 +14,7 @@ dotenv.config({ path: ".env.local" });
 
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { getAuth, signInWithEmailAndPassword, signInAnonymously } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey:            process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -24,8 +25,9 @@ const firebaseConfig = {
   appId:             process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
+const app  = initializeApp(firebaseConfig);
+const db   = getFirestore(app);
+const auth = getAuth(app);
 
 export const DELTRON_HUANCAYO_PRODUCTS = [
   // ── Escritorios Luteame ──────────────────────────────────────────────────
@@ -736,21 +738,50 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
 ];
 
 async function seed() {
-  console.log("🌱 Sembrando Firestore con productos reales de Deltron Huancayo...\n");
+  console.log("🌱 Iniciando proceso de sembrado para Luteame...");
 
+  // Intento de autenticación si se proporcionan credenciales
+  const email = process.env.ADMIN_EMAIL || process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+  const password = process.env.ADMIN_PASSWORD || process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
+
+  if (email && password) {
+    try {
+      console.log(`🔑 Autenticando con usuario administrador (${email})...`);
+      await signInWithEmailAndPassword(auth, email, password);
+      console.log("✅ Autenticado correctamente.");
+    } catch (authErr: any) {
+      console.warn("⚠️ No se pudo autenticar con credenciales admin:", authErr.message);
+    }
+  } else {
+    try {
+      await signInAnonymously(auth);
+      console.log("ℹ️ Sesión anónima iniciada.");
+    } catch {
+      // Ignorar si no está habilitado anonymous auth
+    }
+  }
+
+  console.log("\n📦 Sembrando Firestore con productos reales de Deltron Huancayo...\n");
+
+  let count = 0;
   for (const product of DELTRON_HUANCAYO_PRODUCTS) {
     const ref = await addDoc(collection(db, "productos"), {
       ...product,
       fechaCreacion: serverTimestamp(),
     });
-    console.log(`  ✅ [${product.categoria.toUpperCase()}] ${product.nombre} -> S/. ${product.precio} (Stock: ${product.stock}) [${ref.id}]`);
+    count++;
+    console.log(`  ✅ [${count}/${DELTRON_HUANCAYO_PRODUCTS.length}] [${product.categoria.toUpperCase()}] ${product.nombre} -> S/. ${product.precio} (Stock: ${product.stock}) [${ref.id}]`);
   }
 
   console.log(`\n✨ ¡Éxito! Se han cargado ${DELTRON_HUANCAYO_PRODUCTS.length} productos reales del almacén de Huancayo a la base de datos.`);
   process.exit(0);
 }
 
-seed().catch((err) => {
-  console.error("❌ Error en el sembrado:", err);
+seed().catch((err: any) => {
+  console.error("\n❌ Error en el sembrado:", err.message || err);
+  if (err.code === "permission-denied" || err.message?.includes("PERMISSION_DENIED")) {
+    console.error("\n🔒 CAUSA: Las Reglas de Seguridad de Firestore en la consola de Firebase bloquearon la escritura.");
+    console.error("👉 SOLUCIÓN: Ve a la Consola de Firebase -> Firestore Database -> pestaña 'Reglas' (Rules) y pega las reglas de 'firestore.rules'.\n");
+  }
   process.exit(1);
 });

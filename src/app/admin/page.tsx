@@ -792,15 +792,20 @@ export default function AdminPage() {
     router.push("/login");
   };
 
-  // Real database seeding action
   const handleRealSeedDB = async () => {
     setActionLoading("seed");
     try {
       await seedDatabase(SAMPLE_PRODUCTS, MOCK_BUILD);
       showToast("Base de datos e índice de garantía (000124) creados con éxito.", "success");
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error seeding DB:", err);
-      showToast("Error al sembrar la base de datos.", "info");
+      const isPermErr = err?.code === "permission-denied" || err?.message?.includes("permission");
+      showToast(
+        isPermErr
+          ? "Error de permisos en Firebase. Actualiza las 'Reglas' en Firebase Console con el archivo firestore.rules."
+          : `Error al sembrar: ${err?.message || "Error desconocido"}`,
+        "info"
+      );
     } finally {
       setActionLoading(null);
     }
