@@ -13,7 +13,7 @@ import * as dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { getFirestore, collection, doc, writeBatch, serverTimestamp } from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword, signInAnonymously } from "firebase/auth";
 
 const firebaseConfig = {
@@ -763,17 +763,22 @@ async function seed() {
 
   console.log("\n📦 Sembrando Firestore con productos reales de Deltron Huancayo...\n");
 
+  const batch = writeBatch(db);
   let count = 0;
   for (const product of DELTRON_HUANCAYO_PRODUCTS) {
-    const ref = await addDoc(collection(db, "productos"), {
+    const productRef = doc(collection(db, "productos"));
+    batch.set(productRef, {
       ...product,
       fechaCreacion: serverTimestamp(),
     });
     count++;
-    console.log(`  ✅ [${count}/${DELTRON_HUANCAYO_PRODUCTS.length}] [${product.categoria.toUpperCase()}] ${product.nombre} -> S/. ${product.precio} (Stock: ${product.stock}) [${ref.id}]`);
+    console.log(`  ➕ [${count}/${DELTRON_HUANCAYO_PRODUCTS.length}] [${product.categoria.toUpperCase()}] ${product.nombre} -> S/. ${product.precio} (Stock: ${product.stock})`);
   }
 
-  console.log(`\n✨ ¡Éxito! Se han cargado ${DELTRON_HUANCAYO_PRODUCTS.length} productos reales del almacén de Huancayo a la base de datos.`);
+  console.log(`\n⏳ Enviando lote atómico de ${count} productos a Firestore...`);
+  await batch.commit();
+
+  console.log(`\n✨ ¡Éxito! Se han guardado TODOS los ${DELTRON_HUANCAYO_PRODUCTS.length} productos en la base de datos Firestore.`);
   process.exit(0);
 }
 

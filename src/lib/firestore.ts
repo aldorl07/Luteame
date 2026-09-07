@@ -13,6 +13,7 @@ import {
   serverTimestamp,
   Unsubscribe,
   QueryConstraint,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "./firebase";
 import type { Product, UserProfile, Setup, ProductCategory, Lead, LeadStatus, FollowUpRecord } from "@/types";
@@ -218,22 +219,29 @@ export async function resolveTicket(
 // ─── Seed Database ───────────────────────────────────────────────────────────
 
 export async function seedDatabase(products: any[], mockBuild: any): Promise<void> {
-  // 1. Seed products
+  const batch = writeBatch(db);
+
+  // 1. Añadir todos los productos al lote atómico
   for (const product of products) {
-    await addDoc(collection(db, "productos"), {
+    const productRef = doc(collection(db, "productos"));
+    batch.set(productRef, {
       ...product,
       fechaCreacion: serverTimestamp(),
     });
   }
 
-  // 2. Seed mock warranty build (remove LUTE- prefix just in case)
+  // 2. Añadir equipo de garantía al lote atómico
   const cleanId = mockBuild.id.replace("LUTE-", "");
-  await setDoc(doc(db, "equipos_ensamblados", cleanId), {
+  const warrantyRef = doc(db, "equipos_ensamblados", cleanId);
+  batch.set(warrantyRef, {
     clienteNombre: mockBuild.clienteNombre,
     fechaEnsamblaje: serverTimestamp(),
-    garantiaVencimiento: new Date(Date.now() + 2 * 365 * 24 * 60 * 60 * 1000), // 2 years warranty
+    garantiaVencimiento: new Date(Date.now() + 2 * 365 * 24 * 60 * 60 * 1000), // 2 años de garantía
     componentes: mockBuild.componentes,
   });
+
+  // Ejecutar todos los registros en una sola llamada atómica
+  await batch.commit();
 }
 
 // ─── CRM & Leads / Pipeline de Ventas ─────────────────────────────────────────
