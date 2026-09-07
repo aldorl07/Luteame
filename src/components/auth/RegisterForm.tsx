@@ -60,6 +60,12 @@ export default function RegisterForm() {
     try {
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
       await createUserProfile(user.uid, { nombre: nombre.trim(), correo: email });
+      
+      const now = Date.now();
+      localStorage.setItem("luteame_last_activity", now.toString());
+      localStorage.setItem("luteame_session_start", now.toString());
+      localStorage.setItem("luteame_session_uid", user.uid);
+
       setSuccess(true);
       setTimeout(() => router.push("/"), 1200);
     } catch (err: unknown) {

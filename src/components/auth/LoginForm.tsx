@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { getUserProfile } from "@/lib/firestore";
@@ -27,7 +27,9 @@ function mapFirebaseError(code: string): string {
 }
 
 export default function LoginForm() {
-  const router = useRouter();
+  const router       = useRouter();
+  const searchParams = useSearchParams();
+  const reason       = searchParams.get("reason");
 
   const [email, setEmail]         = useState("");
   const [password, setPassword]   = useState("");
@@ -64,10 +66,19 @@ export default function LoginForm() {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       
+      // Initialize activity and session markers for inactivity/auto-logout tracking
+      const now = Date.now();
+      localStorage.setItem("luteame_last_activity", now.toString());
+      localStorage.setItem("luteame_session_start", now.toString());
+      localStorage.setItem("luteame_session_uid", userCredential.user.uid);
+
       if (isAdminMode) {
         const profile = await getUserProfile(userCredential.user.uid);
         if (profile?.rol !== "admin") {
           await signOut(auth);
+          localStorage.removeItem("luteame_last_activity");
+          localStorage.removeItem("luteame_session_start");
+          localStorage.removeItem("luteame_session_uid");
           setGlobalError("Acceso denegado. Esta cuenta no tiene privilegios de administrador.");
           setLoading(false);
           return;
@@ -140,6 +151,27 @@ export default function LoginForm() {
             {isAdminMode ? "Consola de administración y monitoreo de sistemas." : "Bienvenido de vuelta, comandante."}
           </p>
         </div>
+
+        {/* Inactivity / Session Expired Notice */}
+        {reason === "inactivity" && !globalError && (
+          <div className="mb-5 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 font-montserrat text-[13px] flex items-start gap-2.5 animate-fade-in shadow-lg">
+            <span className="material-symbols-outlined text-amber-400 text-xl shrink-0 mt-0.5">lock_clock</span>
+            <div>
+              <strong className="block text-amber-300 font-bold mb-0.5">Sesión cerrada por inactividad</strong>
+              Por motivos de seguridad, tu sesión se cerró tras un periodo de inactividad. Por favor, ingresa nuevamente.
+            </div>
+          </div>
+        )}
+
+        {reason === "session_expired" && !globalError && (
+          <div className="mb-5 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 font-montserrat text-[13px] flex items-start gap-2.5 animate-fade-in shadow-lg">
+            <span className="material-symbols-outlined text-amber-400 text-xl shrink-0 mt-0.5">schedule</span>
+            <div>
+              <strong className="block text-amber-300 font-bold mb-0.5">Sesión expirada</strong>
+              Tu sesión ha caducado después de varias horas. Por favor, inicia sesión para continuar en Luteame.
+            </div>
+          </div>
+        )}
 
         {isAdminMode && (
           <div className="mb-5 p-3 rounded-lg bg-tertiary/10 border border-tertiary/20 text-tertiary font-montserrat text-[12px] flex items-start gap-2 animate-fade-in">

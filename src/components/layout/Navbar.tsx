@@ -22,14 +22,14 @@ const NAV_LINKS = [
 export default function Navbar() {
   const pathname        = usePathname();
   const router          = useRouter();
-  const { user, loading, isAdmin } = useAuthContext();
+  const { user, loading, isAdmin, logout } = useAuthContext();
   const itemCount       = useCartStore((s) => s.itemCount);
   const cartOpen        = useUIStore((s) => s.cartOpen);
   const setCartOpen    = useUIStore((s) => s.setCartOpen);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleSignOut = async () => {
-    await signOut(auth);
+    await logout("manual");
     router.push("/");
   };
 
