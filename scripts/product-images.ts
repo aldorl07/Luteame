@@ -10,24 +10,24 @@ export const PRODUCT_REAL_IMAGES: Record<string, string> = {
   "Compact Studio Desk — Pino": "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800&auto=format&fit=crop&q=80",
 
   // ── Procesadores AMD ──
-  "AMD Ryzen 5 7600X 4.7GHz AM5": "https://m.media-amazon.com/images/I/51m7L9bQI8L._AC_SL1080_.jpg",
-  "AMD Ryzen 5 8500G 3.5GHz AM5": "https://m.media-amazon.com/images/I/61McewJ0tXL._AC_SL1080_.jpg",
-  "AMD Ryzen 5 8600G 4.3GHz AM5": "https://m.media-amazon.com/images/I/61McewJ0tXL._AC_SL1080_.jpg",
-  "AMD Ryzen 7 5700G 3.8GHz AM4": "https://m.media-amazon.com/images/I/514n5cMSU7L._AC_SL1080_.jpg",
-  "AMD Ryzen 7 8700G 4.2GHz AM5": "https://m.media-amazon.com/images/I/61McewJ0tXL._AC_SL1080_.jpg",
+  "AMD Ryzen 5 7600X 4.7GHz AM5": "/products/ryzen-7000.jpg",
+  "AMD Ryzen 5 8500G 3.5GHz AM5": "/products/ryzen-8000g.jpg",
+  "AMD Ryzen 5 8600G 4.3GHz AM5": "/products/ryzen-8000g.jpg",
+  "AMD Ryzen 7 5700G 3.8GHz AM4": "/products/ryzen-5700g.jpg",
+  "AMD Ryzen 7 8700G 4.2GHz AM5": "/products/ryzen-8000g.jpg",
 
   // ── Procesadores Intel ──
-  "Intel Core i5-14400F 2.5GHz LGA1700": "https://m.media-amazon.com/images/I/61Tf-K4G0UL._AC_SL1200_.jpg",
-  "Intel Core i7-14700 2.1GHz LGA1700": "https://m.media-amazon.com/images/I/61qJ+zUOB9L._AC_SL1200_.jpg",
-  "Intel Core i7-14700F 2.1GHz LGA1700": "https://m.media-amazon.com/images/I/61qJ+zUOB9L._AC_SL1200_.jpg",
-  "Intel Core i9-14900K 3.2GHz LGA1700": "https://m.media-amazon.com/images/I/61Hau2kH2dL._AC_SL1200_.jpg",
-  "Intel Core Ultra 5 225F 3.3GHz LGA1851": "https://m.media-amazon.com/images/I/61Tf-K4G0UL._AC_SL1200_.jpg",
+  "Intel Core i5-14400F 2.5GHz LGA1700": "/products/intel-i5.jpg",
+  "Intel Core i7-14700 2.1GHz LGA1700": "/products/intel-i7.jpg",
+  "Intel Core i7-14700F 2.1GHz LGA1700": "/products/intel-i7.jpg",
+  "Intel Core i9-14900K 3.2GHz LGA1700": "/products/intel-i9.jpg",
+  "Intel Core Ultra 5 225F 3.3GHz LGA1851": "/products/intel-i5.jpg",
 
   // ── Tarjetas de Video ──
-  "ASUS Dual GeForce RTX 3050 OC 6GB GDDR6": "https://m.media-amazon.com/images/I/81U-f0ZJdRL._AC_SL1500_.jpg",
-  "ASUS Dual GeForce RTX 5060 OC 8GB GDDR7": "https://m.media-amazon.com/images/I/71N1u8z+bRL._AC_SL1500_.jpg",
-  "ASUS Dual GeForce RTX 5060 EVO 8GB": "https://m.media-amazon.com/images/I/81dG7L2fT-L._AC_SL1500_.jpg",
-  "Gigabyte GeForce RTX 5060 Ti Eagle OC 8GB": "https://m.media-amazon.com/images/I/71yLz9ZgTfL._AC_SL1500_.jpg",
+  "ASUS Dual GeForce RTX 3050 OC 6GB GDDR6": "/products/asus-rtx-dual.jpg",
+  "ASUS Dual GeForce RTX 5060 OC 8GB GDDR7": "/products/asus-rtx-dual.jpg",
+  "ASUS Dual GeForce RTX 5060 EVO 8GB": "/products/asus-rtx-dual.jpg",
+  "Gigabyte GeForce RTX 5060 Ti Eagle OC 8GB": "/products/asus-rtx-dual.jpg",
 
   // ── Placas Madre ──
   "ASUS Prime B760M-A DDR5 (LGA1700)": "https://sercoplus.com/33376-large_default/mainboard-asus-prime-b760m-a-d4-lga-170.jpg",

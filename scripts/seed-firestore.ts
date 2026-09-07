@@ -71,7 +71,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "procesadores",
     precio: 849, // USD 213.56 * 1.18 * 3.370
     stock: 1,
-    imagenUrl: "https://m.media-amazon.com/images/I/51m7L9bQI8L._AC_SL1080_.jpg",
+    imagenUrl: "/products/ryzen-7000.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "AM5", nucleos: "6", hilos: "12", frecuencia: "4.7GHz", tdp: "105W", arquitectura: "Zen 4" },
     rating: 4.8,
@@ -82,7 +82,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "procesadores",
     precio: 787, // USD 197.99 * 1.18 * 3.370
     stock: 5,
-    imagenUrl: "https://m.media-amazon.com/images/I/61McewJ0tXL._AC_SL1080_.jpg",
+    imagenUrl: "/products/ryzen-8000g.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "AM5", nucleos: "6", hilos: "12", frecuencia: "3.5GHz", tdp: "65W", graficos: "Radeon 740M" },
     rating: 4.7,
@@ -93,7 +93,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "procesadores",
     precio: 633, // USD 159.29 * 1.18 * 3.370
     stock: 6,
-    imagenUrl: "https://m.media-amazon.com/images/I/61McewJ0tXL._AC_SL1080_.jpg",
+    imagenUrl: "/products/ryzen-8000g.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "AM5", nucleos: "6", hilos: "12", frecuencia: "4.3GHz", tdp: "65W", graficos: "Radeon 760M" },
     rating: 4.9,
@@ -104,7 +104,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "procesadores",
     precio: 713, // USD 179.39 * 1.18 * 3.370
     stock: 13,
-    imagenUrl: "https://m.media-amazon.com/images/I/514n5cMSU7L._AC_SL1080_.jpg",
+    imagenUrl: "/products/ryzen-5700g.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "AM4", nucleos: "8", hilos: "16", frecuencia: "3.8GHz", tdp: "65W", graficos: "Radeon Vega 8" },
     rating: 4.9,
@@ -115,7 +115,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "procesadores",
     precio: 879, // USD 221.00 * 1.18 * 3.370
     stock: 3,
-    imagenUrl: "https://m.media-amazon.com/images/I/61McewJ0tXL._AC_SL1080_.jpg",
+    imagenUrl: "/products/ryzen-8000g.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "AM5", nucleos: "8", hilos: "16", frecuencia: "4.2GHz", tdp: "65W", graficos: "Radeon 780M con NPU IA" },
     rating: 5.0,
@@ -126,7 +126,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "procesadores",
     precio: 705, // USD 177.38 * 1.18 * 3.370
     stock: 4,
-    imagenUrl: "https://m.media-amazon.com/images/I/61Tf-K4G0UL._AC_SL1200_.jpg",
+    imagenUrl: "/products/intel-i5.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "LGA1700", nucleos: "10 (6P + 4E)", hilos: "16", frecuencia: "4.7GHz Turbo", tdp: "65W" },
     rating: 4.8,
@@ -137,7 +137,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "procesadores",
     precio: 1563, // USD 392.96 * 1.18 * 3.370
     stock: 2,
-    imagenUrl: "https://m.media-amazon.com/images/I/61qJ+zUOB9L._AC_SL1200_.jpg",
+    imagenUrl: "/products/intel-i7.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "LGA1700", nucleos: "20 (8P + 12E)", hilos: "28", frecuencia: "5.4GHz Turbo", tdp: "65W" },
     rating: 4.9,
@@ -148,7 +148,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "procesadores",
     precio: 1403, // USD 352.76 * 1.18 * 3.370
     stock: 10,
-    imagenUrl: "https://m.media-amazon.com/images/I/61qJ+zUOB9L._AC_SL1200_.jpg",
+    imagenUrl: "/products/intel-i7.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "LGA1700", nucleos: "20 (8P + 12E)", hilos: "28", frecuencia: "5.4GHz Turbo", tdp: "65W" },
     rating: 4.9,
@@ -159,7 +159,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "procesadores",
     precio: 2274, // USD 571.85 * 1.18 * 3.370
     stock: 1,
-    imagenUrl: "https://m.media-amazon.com/images/I/61Hau2kH2dL._AC_SL1200_.jpg",
+    imagenUrl: "/products/intel-i9.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "LGA1700", nucleos: "24 (8P + 16E)", hilos: "32", frecuencia: "6.0GHz Turbo", tdp: "125W" },
     rating: 5.0,
@@ -170,7 +170,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "procesadores",
     precio: 675, // USD 169.74 * 1.18 * 3.370
     stock: 4,
-    imagenUrl: "https://m.media-amazon.com/images/I/61Tf-K4G0UL._AC_SL1200_.jpg",
+    imagenUrl: "/products/intel-i5.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "LGA1851", nucleos: "10", hilos: "10", frecuencia: "4.9GHz Turbo", tdp: "65W", arquitectura: "Arrow Lake" },
     rating: 4.8,
@@ -183,7 +183,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "graficas",
     precio: 1151, // USD 289.44 * 1.18 * 3.370
     stock: 13,
-    imagenUrl: "https://m.media-amazon.com/images/I/81U-f0ZJdRL._AC_SL1500_.jpg",
+    imagenUrl: "/products/asus-rtx-dual.jpg",
     garantiaLocal: true,
     especificaciones: { vram: "6GB GDDR6", bus: "96-bit", boost: "1507MHz", conexion: "PCIe 4.0", ventiladores: "Dual Fan" },
     rating: 4.7,
@@ -194,7 +194,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "graficas",
     precio: 1930, // USD 485.42 * 1.18 * 3.370
     stock: 2,
-    imagenUrl: "https://m.media-amazon.com/images/I/71N1u8z+bRL._AC_SL1500_.jpg",
+    imagenUrl: "/products/asus-rtx-dual.jpg",
     garantiaLocal: true,
     especificaciones: { vram: "8GB GDDR7", bus: "128-bit", conexion: "PCIe 5.0", tecnologia: "DLSS 4, Ray Tracing", ventiladores: "Dual Axial-tech" },
     rating: 5.0,
@@ -205,7 +205,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "graficas",
     precio: 1890, // USD 475.37 * 1.18 * 3.370
     stock: 1,
-    imagenUrl: "https://m.media-amazon.com/images/I/81dG7L2fT-L._AC_SL1500_.jpg",
+    imagenUrl: "/products/asus-rtx-dual.jpg",
     garantiaLocal: true,
     especificaciones: { vram: "8GB GDDR7", bus: "128-bit", conexion: "PCIe 5.0", perfil: "Compact EVO", ventiladores: "Dual Fan" },
     rating: 4.9,
@@ -216,7 +216,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "graficas",
     precio: 1775, // USD 446.22 * 1.18 * 3.370
     stock: 4,
-    imagenUrl: "https://m.media-amazon.com/images/I/71yLz9ZgTfL._AC_SL1500_.jpg",
+    imagenUrl: "/products/asus-rtx-dual.jpg",
     garantiaLocal: true,
     especificaciones: { vram: "8GB GDDR7", bus: "128-bit", conexion: "PCIe 5.0", refrigeracion: "Windforce 3X Fans" },
     rating: 4.9,
