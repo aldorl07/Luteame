@@ -71,7 +71,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "procesadores",
     precio: 849, // USD 213.56 * 1.18 * 3.370
     stock: 1,
-    imagenUrl: "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/51m7L9bQI8L._AC_SL1080_.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "AM5", nucleos: "6", hilos: "12", frecuencia: "4.7GHz", tdp: "105W", arquitectura: "Zen 4" },
     rating: 4.8,
@@ -82,7 +82,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "procesadores",
     precio: 787, // USD 197.99 * 1.18 * 3.370
     stock: 5,
-    imagenUrl: "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/61McewJ0tXL._AC_SL1080_.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "AM5", nucleos: "6", hilos: "12", frecuencia: "3.5GHz", tdp: "65W", graficos: "Radeon 740M" },
     rating: 4.7,
@@ -93,7 +93,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "procesadores",
     precio: 633, // USD 159.29 * 1.18 * 3.370
     stock: 6,
-    imagenUrl: "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/61McewJ0tXL._AC_SL1080_.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "AM5", nucleos: "6", hilos: "12", frecuencia: "4.3GHz", tdp: "65W", graficos: "Radeon 760M" },
     rating: 4.9,
@@ -104,7 +104,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "procesadores",
     precio: 713, // USD 179.39 * 1.18 * 3.370
     stock: 13,
-    imagenUrl: "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/514n5cMSU7L._AC_SL1080_.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "AM4", nucleos: "8", hilos: "16", frecuencia: "3.8GHz", tdp: "65W", graficos: "Radeon Vega 8" },
     rating: 4.9,
@@ -115,7 +115,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "procesadores",
     precio: 879, // USD 221.00 * 1.18 * 3.370
     stock: 3,
-    imagenUrl: "https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/61McewJ0tXL._AC_SL1080_.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "AM5", nucleos: "8", hilos: "16", frecuencia: "4.2GHz", tdp: "65W", graficos: "Radeon 780M con NPU IA" },
     rating: 5.0,
@@ -126,7 +126,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "procesadores",
     precio: 705, // USD 177.38 * 1.18 * 3.370
     stock: 4,
-    imagenUrl: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/61Tf-K4G0UL._AC_SL1200_.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "LGA1700", nucleos: "10 (6P + 4E)", hilos: "16", frecuencia: "4.7GHz Turbo", tdp: "65W" },
     rating: 4.8,
@@ -137,7 +137,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "procesadores",
     precio: 1563, // USD 392.96 * 1.18 * 3.370
     stock: 2,
-    imagenUrl: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/61qJ+zUOB9L._AC_SL1200_.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "LGA1700", nucleos: "20 (8P + 12E)", hilos: "28", frecuencia: "5.4GHz Turbo", tdp: "65W" },
     rating: 4.9,
@@ -148,7 +148,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "procesadores",
     precio: 1403, // USD 352.76 * 1.18 * 3.370
     stock: 10,
-    imagenUrl: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/61qJ+zUOB9L._AC_SL1200_.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "LGA1700", nucleos: "20 (8P + 12E)", hilos: "28", frecuencia: "5.4GHz Turbo", tdp: "65W" },
     rating: 4.9,
@@ -159,7 +159,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "procesadores",
     precio: 2274, // USD 571.85 * 1.18 * 3.370
     stock: 1,
-    imagenUrl: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/61Hau2kH2dL._AC_SL1200_.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "LGA1700", nucleos: "24 (8P + 16E)", hilos: "32", frecuencia: "6.0GHz Turbo", tdp: "125W" },
     rating: 5.0,
@@ -170,7 +170,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "procesadores",
     precio: 675, // USD 169.74 * 1.18 * 3.370
     stock: 4,
-    imagenUrl: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/61Tf-K4G0UL._AC_SL1200_.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "LGA1851", nucleos: "10", hilos: "10", frecuencia: "4.9GHz Turbo", tdp: "65W", arquitectura: "Arrow Lake" },
     rating: 4.8,
@@ -183,7 +183,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "graficas",
     precio: 1151, // USD 289.44 * 1.18 * 3.370
     stock: 13,
-    imagenUrl: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/81U-f0ZJdRL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { vram: "6GB GDDR6", bus: "96-bit", boost: "1507MHz", conexion: "PCIe 4.0", ventiladores: "Dual Fan" },
     rating: 4.7,
@@ -194,7 +194,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "graficas",
     precio: 1930, // USD 485.42 * 1.18 * 3.370
     stock: 2,
-    imagenUrl: "https://images.unsplash.com/photo-1591488320449-011701bb6704?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/71N1u8z+bRL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { vram: "8GB GDDR7", bus: "128-bit", conexion: "PCIe 5.0", tecnologia: "DLSS 4, Ray Tracing", ventiladores: "Dual Axial-tech" },
     rating: 5.0,
@@ -205,7 +205,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "graficas",
     precio: 1890, // USD 475.37 * 1.18 * 3.370
     stock: 1,
-    imagenUrl: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/81dG7L2fT-L._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { vram: "8GB GDDR7", bus: "128-bit", conexion: "PCIe 5.0", perfil: "Compact EVO", ventiladores: "Dual Fan" },
     rating: 4.9,
@@ -216,7 +216,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "graficas",
     precio: 1775, // USD 446.22 * 1.18 * 3.370
     stock: 4,
-    imagenUrl: "https://images.unsplash.com/photo-1587202372728-668516d25244?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/71yLz9ZgTfL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { vram: "8GB GDDR7", bus: "128-bit", conexion: "PCIe 5.0", refrigeracion: "Windforce 3X Fans" },
     rating: 4.9,
@@ -229,7 +229,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "placas",
     precio: 388, // USD 97.49 * 1.18 * 3.370
     stock: 5,
-    imagenUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://sercoplus.com/33376-large_default/mainboard-asus-prime-b760m-a-d4-lga-170.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "LGA1700", formato: "Micro-ATX", ram: "4x DDR5 hasta 7200MHz", m2: "2x PCIe 4.0", video: "HDMI/DP" },
     rating: 4.8,
@@ -240,7 +240,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "placas",
     precio: 250, // USD 62.91 * 1.18 * 3.370
     stock: 4,
-    imagenUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/71cZkW4L6hL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "LGA1700", formato: "Micro-ATX", ram: "2x DDR5", m2: "1x PCIe 4.0" },
     rating: 4.6,
@@ -251,7 +251,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "placas",
     precio: 235, // USD 59.19 * 1.18 * 3.370
     stock: 6,
-    imagenUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/71wLp+6Z1vL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "LGA1700", formato: "Micro-ATX", ram: "2x DDR5", m2: "1x PCIe 4.0 NVMe" },
     rating: 4.5,
@@ -262,7 +262,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "placas",
     precio: 379, // USD 95.37 * 1.18 * 3.370
     stock: 20,
-    imagenUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/71PjY56t2oL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "LGA1851", formato: "Micro-ATX", ram: "2x DDR5 hasta 6400MHz", m2: "2x PCIe 4.0 NVMe" },
     rating: 4.9,
@@ -273,7 +273,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "placas",
     precio: 315, // USD 79.29 * 1.18 * 3.370
     stock: 20,
-    imagenUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/71PjY56t2oL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "LGA1851", formato: "Micro-ATX", ram: "2x DDR5", m2: "1x PCIe 4.0" },
     rating: 4.7,
@@ -284,7 +284,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "placas",
     precio: 187, // USD 46.98 * 1.18 * 3.370
     stock: 20,
-    imagenUrl: "https://images.unsplash.com/photo-1563770660941-20978e870e26?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/71Wj+qF+0jL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "AM4", formato: "Micro-ATX", ram: "2x DDR4 hasta 3200MHz", m2: "1x Ultra M.2" },
     rating: 4.6,
@@ -295,7 +295,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "placas",
     precio: 196, // USD 49.25 * 1.18 * 3.370
     stock: 10,
-    imagenUrl: "https://images.unsplash.com/photo-1563770660941-20978e870e26?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/81xGZ3mR6oL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "AM4", formato: "Micro-ATX", ram: "2x DDR4 hasta 4600MHz", m2: "1x PCIe 3.0" },
     rating: 4.7,
@@ -306,7 +306,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "placas",
     precio: 352, // USD 88.44 * 1.18 * 3.370
     stock: 11,
-    imagenUrl: "https://images.unsplash.com/photo-1563770660941-20978e870e26?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/81q9iS1f4SL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "AM4", formato: "Micro-ATX", ram: "4x DDR4", m2: "2x M.2 PCIe 4.0", wifi: "WiFi AC + Bluetooth" },
     rating: 4.9,
@@ -317,7 +317,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "placas",
     precio: 259, // USD 65.22 * 1.18 * 3.370
     stock: 6,
-    imagenUrl: "https://images.unsplash.com/photo-1563770660941-20978e870e26?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/71fL9Wz5+2L._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { socket: "AM5", formato: "Micro-ATX", ram: "2x DDR5 hasta 6000MHz", m2: "1x PCIe 4.0 NVMe" },
     rating: 4.8,
@@ -330,7 +330,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "ram",
     precio: 458, // USD 115.07 * 1.18 * 3.370
     stock: 10,
-    imagenUrl: "https://images.unsplash.com/photo-1562976540-1502c2145186?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/61W8eXj-kVL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { capacidad: "16GB", tipo: "DDR4", velocidad: "3200MHz", disipador: "Aluminio Negro" },
     rating: 4.8,
@@ -341,7 +341,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "ram",
     precio: 739, // USD 185.93 * 1.18 * 3.370
     stock: 1,
-    imagenUrl: "https://images.unsplash.com/photo-1541029071515-84cc54f84dc5?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/61I2eQ3u1XL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { capacidad: "16GB", tipo: "DDR4", velocidad: "3200MHz", rgb: "RGB Personalizable" },
     rating: 4.9,
@@ -352,7 +352,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "ram",
     precio: 257, // USD 64.57 * 1.18 * 3.370
     stock: 10,
-    imagenUrl: "https://images.unsplash.com/photo-1562976540-1502c2145186?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/61W8eXj-kVL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { capacidad: "8GB", tipo: "DDR4", velocidad: "3200MHz" },
     rating: 4.7,
@@ -363,7 +363,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "ram",
     precio: 299, // USD 75.27 * 1.18 * 3.370
     stock: 6,
-    imagenUrl: "https://images.unsplash.com/photo-1562976540-1502c2145186?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/61G+nZqQf4L._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { capacidad: "8GB", tipo: "DDR4", velocidad: "3200MHz" },
     rating: 4.8,
@@ -374,7 +374,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "ram",
     precio: 269, // USD 67.54 * 1.18 * 3.370
     stock: 12,
-    imagenUrl: "https://images.unsplash.com/photo-1562976540-1502c2145186?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/71NnN4eX8OL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { capacidad: "8GB", tipo: "DDR4", velocidad: "3200MHz", disipador: "Gris Titanio" },
     rating: 4.7,
@@ -385,7 +385,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "ram",
     precio: 906, // USD 227.73 * 1.18 * 3.370
     stock: 2,
-    imagenUrl: "https://images.unsplash.com/photo-1562976540-1502c2145186?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/61J2m5o8o6L._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { capacidad: "16GB", tipo: "DDR5", velocidad: "5600MHz", latencia: "CL40" },
     rating: 4.9,
@@ -396,7 +396,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "ram",
     precio: 919, // USD 231.15 * 1.18 * 3.370
     stock: 7,
-    imagenUrl: "https://images.unsplash.com/photo-1562976540-1502c2145186?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/61J2m5o8o6L._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { capacidad: "16GB", tipo: "DDR5", velocidad: "6000MHz", latencia: "CL36" },
     rating: 5.0,
@@ -409,7 +409,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "almacenamiento",
     precio: 665, // USD 167.33 * 1.18 * 3.370
     stock: 10,
-    imagenUrl: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/71jQz-aQ8ML._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { capacidad: "1TB", formato: "M.2 2280", interfaz: "PCIe 3.0 x4 NVMe", lectura: "1800MB/s" },
     rating: 4.8,
@@ -420,7 +420,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "almacenamiento",
     precio: 257, // USD 64.67 * 1.18 * 3.370
     stock: 10,
-    imagenUrl: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/71jQz-aQ8ML._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { capacidad: "256GB", formato: "M.2 2280", interfaz: "PCIe 3.0 x4" },
     rating: 4.6,
@@ -431,7 +431,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "almacenamiento",
     precio: 1343, // USD 337.68 * 1.18 * 3.370
     stock: 2,
-    imagenUrl: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/71wE1W6eF5L._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { capacidad: "2TB", interfaz: "PCIe 4.0 NVMe", lectura: "7000MB/s", escritura: "7000MB/s", disipador: "Grafeno" },
     rating: 5.0,
@@ -442,7 +442,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "almacenamiento",
     precio: 617, // USD 155.27 * 1.18 * 3.370
     stock: 20,
-    imagenUrl: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/61k1qV7u5OL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { capacidad: "1TB", formato: "M.2 2280", interfaz: "PCIe Gen3 x4", lectura: "2400MB/s" },
     rating: 4.7,
@@ -453,7 +453,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "almacenamiento",
     precio: 635, // USD 159.80 * 1.18 * 3.370
     stock: 10,
-    imagenUrl: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/61k1qV7u5OL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { capacidad: "1TB", formato: "M.2 2280", interfaz: "PCIe Gen4 x4", lectura: "3500MB/s" },
     rating: 4.8,
@@ -488,7 +488,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "fuentes",
     precio: 218, // USD 54.77 * 1.18 * 3.370
     stock: 4,
-    imagenUrl: "https://images.unsplash.com/photo-1587202372616-b43abea06c2a?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/71tQp7p77+L._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { potencia: "750W", certificacion: "80+ Bronze", pcie5: "Soporte PCIe 5.0 12VHPWR", ventilador: "120mm Silencioso" },
     rating: 4.9,
@@ -499,7 +499,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "fuentes",
     precio: 260, // USD 65.33 * 1.18 * 3.370
     stock: 16,
-    imagenUrl: "https://images.unsplash.com/photo-1587202372616-b43abea06c2a?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/71LqK3D-mAL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { potencia: "850W", formato: "ATX", cables: "Mallados Negros", protecciones: "OVP, UVP, SCP" },
     rating: 4.8,
@@ -510,7 +510,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "fuentes",
     precio: 300, // USD 75.38 * 1.18 * 3.370
     stock: 12,
-    imagenUrl: "https://images.unsplash.com/photo-1587202372616-b43abea06c2a?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/71t6W6R0x5L._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { potencia: "1000W", formato: "ATX", eficiencia: "Gamer Certified", ventilador: "140mm Hydraulic Bearing" },
     rating: 4.9,
@@ -521,7 +521,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "fuentes",
     precio: 136, // USD 34.17 * 1.18 * 3.370
     stock: 20,
-    imagenUrl: "https://images.unsplash.com/photo-1587202372616-b43abea06c2a?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/71LqK3D-mAL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { potencia: "650W", formato: "ATX", ventilador: "120mm" },
     rating: 4.7,
@@ -534,7 +534,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "gabinetes",
     precio: 116, // USD 29.15 * 1.18 * 3.370
     stock: 16,
-    imagenUrl: "https://images.unsplash.com/photo-1587202372728-668516d25244?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://mercury.vtexassets.com/arquivos/ids/23580937-800-800?v=639187905861830000&width=800&height=800&aspect=true",
     garantiaLocal: true,
     especificaciones: { factor: "ATX Mid Tower", lateral: "Vidrio Templado", soporteRadiador: "Hasta 240mm/360mm", usbFrontal: "USB 3.0 + Audio" },
     rating: 4.8,
@@ -545,7 +545,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "gabinetes",
     precio: 116, // USD 29.15 * 1.18 * 3.370
     stock: 5,
-    imagenUrl: "https://images.unsplash.com/photo-1587202372728-668516d25244?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://mercury.vtexassets.com/arquivos/ids/23580937-800-800?v=639187905861830000&width=800&height=800&aspect=true",
     garantiaLocal: true,
     especificaciones: { factor: "ATX Mid Tower", flujoAire: "Frontal Mesh de alto flujo", lateral: "Vidrio Templado" },
     rating: 4.8,
@@ -556,7 +556,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "gabinetes",
     precio: 127, // USD 31.86 * 1.18 * 3.370
     stock: 14,
-    imagenUrl: "https://images.unsplash.com/photo-1624705002806-5d72df19c3ad?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/61m1R2fU5OL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { factor: "Micro-ATX", fuenteIncluida: "450W", bahias: "SSD/HDD", diseno: "Oficina y Gaming Ligero" },
     rating: 4.6,
@@ -569,7 +569,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "refrigeracion",
     precio: 171, // USD 43.11 * 1.18 * 3.370
     stock: 20,
-    imagenUrl: "https://images.unsplash.com/photo-1616588589676-62b3bd4ff6d2?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://compuciber.com/wp-content/uploads/2024/05/REFRIGERACION-LIQUIDA-TEROS-TE-8164N-INTEL-Y-AMD-TDP-265W-MAX-240MM-LIQUIDA-TE-8164N.jpg",
     garantiaLocal: true,
     especificaciones: { tipo: "AIO Líquida 240mm", radiador: "Aluminio 240mm", ventiladores: "2x 120mm ARGB", compatibilidad: "Intel LGA1700/1851 y AMD AM4/AM5" },
     rating: 4.9,
@@ -580,7 +580,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "refrigeracion",
     precio: 100, // USD 25.13 * 1.18 * 3.370
     stock: 12,
-    imagenUrl: "https://images.unsplash.com/photo-1587202372579-0524cb51d382?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/71h3K7eUuDL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { tipo: "Aire Torre", heatpipes: "4 de Cobre de contacto directo", ventilador: "120mm RGB", tdp: "Hasta 150W" },
     rating: 4.8,
@@ -591,7 +591,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "refrigeracion",
     precio: 56, // USD 14.07 * 1.18 * 3.370
     stock: 20,
-    imagenUrl: "https://images.unsplash.com/photo-1587202372579-0524cb51d382?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/61Fj3vB-t6L._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { tipo: "Aire Bajo Perfil", ventilador: "90mm Silencioso", compatibilidad: "Intel y AMD" },
     rating: 4.5,
@@ -650,7 +650,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "teclados",
     precio: 24, // USD 5.93 * 1.18 * 3.370
     stock: 20,
-    imagenUrl: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/71z7W2-q6tL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { conexion: "USB Cable reforzado", iluminacion: "RGB Rainbow", teclas: "Membrana Gamer" },
     rating: 4.6,
@@ -661,7 +661,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "teclados",
     precio: 60, // USD 15.08 * 1.18 * 3.370
     stock: 18,
-    imagenUrl: "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/71wE5rF8KOL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { incluye: "Teclado RGB + Mouse 3200DPI + Mousepad Speed + Auriculares Gamer" },
     rating: 4.8,
@@ -672,7 +672,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "headsets",
     precio: 42, // USD 10.55 * 1.18 * 3.370
     stock: 20,
-    imagenUrl: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://alphatechnology.com.pe/wp-content/uploads/2024/09/a2-371.webp",
     garantiaLocal: true,
     especificaciones: { drivers: "50mm Neodimio", microfono: "Omnidireccional con filtro", conexion: "3.5mm + USB para luz" },
     rating: 4.7,
@@ -683,7 +683,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "mousepads",
     precio: 24, // USD 5.93 * 1.18 * 3.370
     stock: 20,
-    imagenUrl: "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/71h3K7eUuDL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { superficie: "Microfibra Speed", iluminacion: "Borde RGB 14 modos", base: "Goma antideslizante" },
     rating: 4.8,
@@ -694,7 +694,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "webcams",
     precio: 108, // USD 27.14 * 1.18 * 3.370
     stock: 20,
-    imagenUrl: "https://images.unsplash.com/photo-1588508065123-287b28e013da?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://mmstoreperu.com/cdn/shop/files/WEBCAM-TEROS-TE-9073N-2_800x.jpg?v=1764600867",
     garantiaLocal: true,
     especificaciones: { resolucion: "4K UHD 3840x2160", enfoque: "Automático", microfono: "Dual con cancelación de ruido", conexion: "USB Plug & Play" },
     rating: 4.9,
@@ -707,7 +707,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "software",
     precio: 567, // USD 142.53 * 1.18 * 3.370
     stock: 5,
-    imagenUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/61k1jY-V2qL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { version: "Windows 11 Professional", idioma: "Español Latino / Multi-idioma", tipoLicencia: "OEM / Digital Permanente" },
     rating: 5.0,
@@ -718,7 +718,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "software",
     precio: 779, // USD 195.98 * 1.18 * 3.370
     stock: 20,
-    imagenUrl: "https://images.unsplash.com/photo-1633419461186-7d40a38105ec?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/61p-3qQ6xTL._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { aplicaciones: "Word, Excel, PowerPoint, Outlook", vigencia: "Licencia de Pago Único Permanente" },
     rating: 4.9,
@@ -729,7 +729,7 @@ export const DELTRON_HUANCAYO_PRODUCTS = [
     categoria: "software",
     precio: 109, // USD 27.30 * 1.18 * 3.370
     stock: 20,
-    imagenUrl: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&auto=format&fit=crop&q=80",
+    imagenUrl: "https://m.media-amazon.com/images/I/61T2bO9x-1L._AC_SL1500_.jpg",
     garantiaLocal: true,
     especificaciones: { proteccion: "Antivirus en tiempo real, Anti-phishing, Limpieza de rendimiento", dispositivos: "3 Dispositivos", vigencia: "1 Año" },
     rating: 4.8,
