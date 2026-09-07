@@ -14,6 +14,10 @@ import {
   seedDatabase,
   clearAllProducts,
   deleteProduct,
+  deleteOrder,
+  clearAllOrders,
+  clearAllTickets,
+  clearAllLeads,
   subscribeToAllLeads,
   updateLeadStatus,
   registerFollowUpAction,
@@ -842,6 +846,53 @@ export default function AdminPage() {
     }
   };
 
+  const handleClearOrders = async () => {
+    if (!window.confirm("¿Estás seguro de que deseas eliminar TODOS los pedidos de prueba registrados?")) {
+      return;
+    }
+    setActionLoading("clear_orders");
+    try {
+      const deletedCount = await clearAllOrders();
+      showToast(`Se han eliminado ${deletedCount} pedidos de prueba.`, "success");
+    } catch (err: any) {
+      console.error("Error clearing orders:", err);
+      showToast("Error al limpiar pedidos.", "info");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleDeleteOrder = async (orderId: string) => {
+    const shortId = `LUTE-${orderId.substring(0, 8).toUpperCase()}`;
+    if (!window.confirm(`¿Deseas eliminar el pedido ${shortId}?`)) {
+      return;
+    }
+    try {
+      await deleteOrder(orderId);
+      showToast(`Pedido ${shortId} eliminado.`, "success");
+    } catch (err: any) {
+      console.error("Error deleting order:", err);
+      showToast("Error al eliminar pedido.", "info");
+    }
+  };
+
+  const handleClearAllTestData = async () => {
+    if (!window.confirm("¿Deseas vaciar TODOS los pedidos, tickets y datos de prueba?")) {
+      return;
+    }
+    setActionLoading("clear_test_data");
+    try {
+      const oCount = await clearAllOrders();
+      const tCount = await clearAllTickets();
+      showToast(`Datos de prueba eliminados (${oCount} pedidos, ${tCount} tickets).`, "success");
+    } catch (err: any) {
+      console.error("Error clearing test data:", err);
+      showToast("Error al limpiar datos de prueba.", "info");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   // Simulated actions for server stuff
   const handleSimulatedAction = (actionName: string, successMessage: string) => {
     setActionLoading(actionName);
@@ -1209,6 +1260,20 @@ export default function AdminPage() {
                       <span className="material-symbols-outlined animate-spin text-sm text-cyan-400">progress_activity</span>
                     )}
                   </button>
+
+                  <button
+                    onClick={handleClearAllTestData}
+                    disabled={actionLoading !== null}
+                    className="w-full btn-secondary text-xs flex justify-between items-center p-3.5 hover:bg-error/10 border-error/30 text-error hover:border-error/60 transition-colors"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-lg text-error">auto_delete</span>
+                      Limpiar Pedidos y Tickets de Prueba
+                    </span>
+                    {actionLoading === "clear_test_data" && (
+                      <span className="material-symbols-outlined animate-spin text-sm text-error">progress_activity</span>
+                    )}
+                  </button>
                 </div>
               </div>
             </div>
@@ -1218,10 +1283,26 @@ export default function AdminPage() {
         {/* TAB 2: ORDER MANAGEMENT */}
         {activeTab === "pedidos" && (
           <div className="glass-panel p-6 rounded-xl border border-outline-variant/20 animate-fade-in">
-            <h3 className="font-poppins text-title-lg font-bold text-white flex items-center gap-2 mb-6">
-              <span className="material-symbols-outlined text-primary">local_shipping</span>
-              Seguimiento de Pedidos y Armado
-            </h3>
+            <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
+              <h3 className="font-poppins text-title-lg font-bold text-white flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary">local_shipping</span>
+                Seguimiento de Pedidos y Armado
+              </h3>
+              {orders.length > 0 && (
+                <button
+                  onClick={handleClearOrders}
+                  disabled={actionLoading !== null}
+                  className="btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 text-error border-error/30 hover:bg-error/10 hover:border-error/60 transition-colors"
+                >
+                  {actionLoading === "clear_orders" ? (
+                    <span className="material-symbols-outlined animate-spin text-sm">progress_activity</span>
+                  ) : (
+                    <span className="material-symbols-outlined text-sm">delete_sweep</span>
+                  )}
+                  Vaciar Pedidos de Prueba
+                </button>
+              )}
+            </div>
 
             {orders.length === 0 ? (
               <p className="text-center font-montserrat text-sm text-on-surface-variant py-8">
@@ -1264,10 +1345,10 @@ export default function AdminPage() {
                           </p>
                         </div>
 
-                        {/* Dropdown status update */}
-                        <div className="flex items-center gap-3">
-                          <label className="font-montserrat text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">
-                            Actualizar Estado:
+                        {/* Dropdown status update & actions */}
+                        <div className="flex items-center gap-2">
+                          <label className="font-montserrat text-[10px] text-on-surface-variant font-bold uppercase tracking-wider hidden sm:inline">
+                            Estado:
                           </label>
                           <select
                             value={order.estado}
@@ -1282,12 +1363,20 @@ export default function AdminPage() {
 
                           <button
                             onClick={() => setExpandedOrders((prev) => ({ ...prev, [order.id]: !isExpanded }))}
-                            className="btn-secondary py-1 px-3 text-xs flex items-center gap-1 border-outline-variant/20"
+                            className="btn-secondary py-1 px-2.5 text-xs flex items-center gap-1 border-outline-variant/20"
                           >
                             <span className="material-symbols-outlined text-sm">
                               {isExpanded ? "keyboard_arrow_up" : "keyboard_arrow_down"}
                             </span>
                             Detalles
+                          </button>
+
+                          <button
+                            onClick={() => handleDeleteOrder(order.id)}
+                            className="p-1 rounded-lg text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors"
+                            title="Eliminar pedido de prueba"
+                          >
+                            <span className="material-symbols-outlined text-base">delete</span>
                           </button>
                         </div>
                       </div>

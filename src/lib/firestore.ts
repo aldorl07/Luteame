@@ -207,6 +207,52 @@ export async function updateOrderStatus(orderId: string, status: string): Promis
   await setDoc(ref, { estado: status }, { merge: true });
 }
 
+export async function deleteOrder(orderId: string): Promise<void> {
+  const ref = doc(db, "pedidos", orderId);
+  const batch = writeBatch(db);
+  batch.delete(ref);
+  await batch.commit();
+}
+
+export async function clearAllOrders(): Promise<number> {
+  const snapshot = await getDocs(collection(db, "pedidos"));
+  if (snapshot.empty) return 0;
+
+  const batch = writeBatch(db);
+  snapshot.docs.forEach((d) => {
+    batch.delete(d.ref);
+  });
+
+  await batch.commit();
+  return snapshot.size;
+}
+
+export async function clearAllTickets(): Promise<number> {
+  const snapshot = await getDocs(collection(db, "tickets_soporte"));
+  if (snapshot.empty) return 0;
+
+  const batch = writeBatch(db);
+  snapshot.docs.forEach((d) => {
+    batch.delete(d.ref);
+  });
+
+  await batch.commit();
+  return snapshot.size;
+}
+
+export async function clearAllLeads(): Promise<number> {
+  const snapshot = await getDocs(collection(db, "leads"));
+  if (snapshot.empty) return 0;
+
+  const batch = writeBatch(db);
+  snapshot.docs.forEach((d) => {
+    batch.delete(d.ref);
+  });
+
+  await batch.commit();
+  return snapshot.size;
+}
+
 // ─── Support Tickets (All) ───────────────────────────────────────────────────
 
 export function subscribeToAllTickets(callback: (tickets: any[]) => void): Unsubscribe {
