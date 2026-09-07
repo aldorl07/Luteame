@@ -100,7 +100,25 @@ export function subscribeToProductsByCategory(
   });
 }
 
-// ─── Setups ───────────────────────────────────────────────────────────────────
+export async function deleteProduct(productId: string): Promise<void> {
+  const ref = doc(db, "productos", productId);
+  const batch = writeBatch(db);
+  batch.delete(ref);
+  await batch.commit();
+}
+
+export async function clearAllProducts(): Promise<number> {
+  const snapshot = await getDocs(collection(db, "productos"));
+  if (snapshot.empty) return 0;
+
+  const batch = writeBatch(db);
+  snapshot.docs.forEach((d) => {
+    batch.delete(d.ref);
+  });
+
+  await batch.commit();
+  return snapshot.size;
+}
 
 export async function saveSetup(
   setup: Omit<Setup, "id" | "fechaCreacion">

@@ -12,6 +12,8 @@ import {
   subscribeToAllTickets,
   resolveTicket,
   seedDatabase,
+  clearAllProducts,
+  deleteProduct,
   subscribeToAllLeads,
   updateLeadStatus,
   registerFollowUpAction,
@@ -811,6 +813,35 @@ export default function AdminPage() {
     }
   };
 
+  const handleClearCatalog = async () => {
+    if (!window.confirm("¿Estás seguro de que deseas vaciar TODOS los productos del catálogo? Esta acción no se puede deshacer.")) {
+      return;
+    }
+    setActionLoading("clear_catalog");
+    try {
+      const totalDeleted = await clearAllProducts();
+      showToast(`Catálogo vaciado. Se eliminaron ${totalDeleted} productos.`, "success");
+    } catch (err: any) {
+      console.error("Error clearing catalog:", err);
+      showToast(`Error al vaciar catálogo: ${err?.message || "Error desconocido"}`, "info");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleDeleteProduct = async (productId: string, productName: string) => {
+    if (!window.confirm(`¿Deseas eliminar "${productName}" del catálogo?`)) {
+      return;
+    }
+    try {
+      await deleteProduct(productId);
+      showToast(`Producto "${productName}" eliminado.`, "success");
+    } catch (err: any) {
+      console.error("Error deleting product:", err);
+      showToast("Error al eliminar el producto.", "info");
+    }
+  };
+
   // Simulated actions for server stuff
   const handleSimulatedAction = (actionName: string, successMessage: string) => {
     setActionLoading(actionName);
@@ -923,11 +954,24 @@ export default function AdminPage() {
             </p>
           </div>
           
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Link href="/" className="btn-secondary text-xs py-2.5 px-4 flex items-center gap-2">
               <span className="material-symbols-outlined text-sm">shopping_bag</span>
               Ir a la Tienda
             </Link>
+            <button
+              onClick={handleClearCatalog}
+              disabled={actionLoading !== null || products.length === 0}
+              className="btn-secondary text-xs py-2.5 px-4 flex items-center gap-2 text-error border-error/30 hover:bg-error/10 hover:border-error/60 transition-colors disabled:opacity-50"
+              title="Eliminar todos los productos de Firestore"
+            >
+              {actionLoading === "clear_catalog" ? (
+                <span className="material-symbols-outlined animate-spin text-sm">progress_activity</span>
+              ) : (
+                <span className="material-symbols-outlined text-sm">delete_sweep</span>
+              )}
+              Vaciar Catálogo
+            </button>
             <button
               onClick={handleRealSeedDB}
               disabled={actionLoading !== null}
@@ -1065,12 +1109,13 @@ export default function AdminPage() {
                       <th className="pb-3 text-right">Precio</th>
                       <th className="pb-3 text-right">Stock</th>
                       <th className="pb-3 text-center">Estado</th>
+                      <th className="pb-3 text-right">Acción</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-outline-variant/20">
                     {products.length === 0 ? (
                       <tr>
-                        <td colSpan={5} className="py-8 text-center text-on-surface-variant">
+                        <td colSpan={6} className="py-8 text-center text-on-surface-variant">
                           El catálogo está vacío. Haz clic en "Sembrar DB Real" para cargar datos iniciales de hardware.
                         </td>
                       </tr>
@@ -1107,6 +1152,15 @@ export default function AdminPage() {
                                   Óptimo
                                 </span>
                               )}
+                            </td>
+                            <td className="py-3.5 text-right">
+                              <button
+                                onClick={() => handleDeleteProduct(p.id, p.nombre)}
+                                className="p-1.5 rounded-lg text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors"
+                                title="Eliminar producto"
+                              >
+                                <span className="material-symbols-outlined text-sm">delete</span>
+                              </button>
                             </td>
                           </tr>
                         );
