@@ -1,13 +1,31 @@
 "use client";
 // src/app/checkout/page.tsx
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
 import { useAuthContext } from "@/context/AuthContext";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import Link from "next/link";
+
+const CATEGORY_LABELS: Record<string, string> = {
+  procesadores: "Procesador (CPU)",
+  graficas: "Tarjeta Gráfica (GPU)",
+  placas: "Placa Madre",
+  ram: "Memoria RAM",
+  almacenamiento: "Almacenamiento",
+  fuentes: "Fuente de Poder",
+  gabinetes: "Gabinete / Case",
+  refrigeracion: "Refrigeración / Cooler",
+  monitores: "Monitor Gaming",
+  teclados: "Teclado",
+  mousepads: "Mousepad",
+  headsets: "Headset / Audífonos",
+  webcams: "Cámara Web",
+  software: "Software / Licencia",
+  escritorios: "Escritorio Luteame",
+};
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -260,33 +278,67 @@ export default function CheckoutPage() {
 
           <table className="w-full text-left text-xs mb-8 border-collapse">
             <thead>
-              <tr className="border-b-2 border-black font-bold">
-                <th className="py-2">Concepto</th>
-                <th className="py-2">Cantidad</th>
-                <th className="py-2 text-right">Precio Unitario</th>
-                <th className="py-2 text-right">Total</th>
+              <tr className="border-b-2 border-black font-bold uppercase text-[11px]">
+                <th className="py-2.5 px-2">Ítem / Componente</th>
+                <th className="py-2.5 px-2">Categoría</th>
+                <th className="py-2.5 px-2 text-center">Cant.</th>
+                <th className="py-2.5 px-2 text-right">P. Unitario</th>
+                <th className="py-2.5 px-2 text-right">Total</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {createdOrderData.items.map((item: any, idx: number) => (
-                <tr key={idx} className="py-2">
-                  <td className="py-2">
-                    <p className="font-semibold">{item.nombre}</p>
-                    {item.componentes && (
-                      <ul className="pl-3 mt-1 list-disc text-[10px] text-gray-500">
-                        {item.componentes.map((c: any) => (
-                          <li key={c.categoria}>
-                            <span className="capitalize">{c.categoria}</span>: {c.nombre}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </td>
-                  <td className="py-2">{item.cantidad}</td>
-                  <td className="py-2 text-right">S/. {item.precioUnitario.toLocaleString("es-PE")}</td>
-                  <td className="py-2 text-right">S/. {item.precioTotal.toLocaleString("es-PE")}</td>
-                </tr>
-              ))}
+              {createdOrderData.items.map((item: any, idx: number) => {
+                const isPC = item.tipo === "pc_configurada" && item.componentes && item.componentes.length > 0;
+                return (
+                  <React.Fragment key={idx}>
+                    {/* Fila Principal */}
+                    <tr className={isPC ? "bg-gray-100 font-bold border-t border-gray-300" : "hover:bg-gray-50"}>
+                      <td className="py-2.5 px-2 font-semibold">
+                        <span>{item.nombre}</span>
+                        {isPC && (
+                          <span className="block text-[10px] text-gray-500 font-normal italic">
+                            Ensamblaje, cableado y verificación técnica LUTEAME
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-2.5 px-2 text-gray-600 capitalize">
+                        {isPC ? "PC Ensamblada" : item.tipo.replace("_", " ")}
+                      </td>
+                      <td className="py-2.5 px-2 text-center">{item.cantidad}</td>
+                      <td className="py-2.5 px-2 text-right font-mono">
+                        S/. {item.precioUnitario.toLocaleString("es-PE")}
+                      </td>
+                      <td className="py-2.5 px-2 text-right font-mono font-bold">
+                        S/. {item.precioTotal.toLocaleString("es-PE")}
+                      </td>
+                    </tr>
+
+                    {/* Desglose individual de componentes */}
+                    {isPC &&
+                      item.componentes.map((c: any, cIdx: number) => {
+                        const catLabel = CATEGORY_LABELS[c.categoria] || c.categoria;
+                        return (
+                          <tr key={`${idx}-${cIdx}`} className="bg-gray-50/70 text-[11px] border-b border-gray-100">
+                            <td className="py-1.5 pl-6 pr-2 text-gray-800">
+                              <span className="inline-block text-gray-400 mr-1 font-mono">↳</span>
+                              {c.nombre}
+                            </td>
+                            <td className="py-1.5 px-2 text-gray-500 font-medium">
+                              {catLabel}
+                            </td>
+                            <td className="py-1.5 px-2 text-center text-gray-400">1</td>
+                            <td className="py-1.5 px-2 text-right font-mono text-gray-700">
+                              S/. {(c.precio || 0).toLocaleString("es-PE")}
+                            </td>
+                            <td className="py-1.5 px-2 text-right font-mono text-gray-700">
+                              S/. {(c.precio || 0).toLocaleString("es-PE")}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                  </React.Fragment>
+                );
+              })}
             </tbody>
           </table>
 
