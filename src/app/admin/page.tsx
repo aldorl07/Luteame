@@ -9,6 +9,7 @@ import {
   subscribeToProducts,
   subscribeToAllOrders,
   updateOrderStatus,
+  verifyOrderPayment,
   subscribeToAllTickets,
   resolveTicket,
   seedDatabase,
@@ -23,7 +24,7 @@ import {
   registerFollowUpAction,
   addLeadInternalNote,
 } from "@/lib/firestore";
-import { Product, Lead, LeadStatus, FollowUpType } from "@/types";
+import { Product, Lead, LeadStatus, FollowUpType, Order } from "@/types";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 
@@ -731,6 +732,14 @@ export default function AdminPage() {
   // Expanded states
   const [expandedOrders, setExpandedOrders] = useState<Record<string, boolean>>({});
 
+  // Orders & Payment Verification state
+  const [orderFilter, setOrderFilter] = useState<"todos" | "revision" | "ensamblaje" | "completados">("todos");
+  const [selectedVoucherOrder, setSelectedVoucherOrder] = useState<any | null>(null);
+  const [isVerifyingPayment, setIsVerifyingPayment] = useState(false);
+  const [showRejectReasonInput, setShowRejectReasonInput] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const [isImageZoomed, setIsImageZoomed] = useState(false);
+
   // Protected route check
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) {
@@ -913,6 +922,58 @@ export default function AdminPage() {
     }
   };
 
+  // Payment Verification Actions
+  const handleApprovePayment = async (order: any) => {
+    setIsVerifyingPayment(true);
+    try {
+      await verifyOrderPayment(
+        order.id,
+        user?.displayName || user?.email || "Admin LUTEAME",
+        true,
+        "en_ensamblaje"
+      );
+      showToast(
+        `¡Pago verificado! El pedido LUTE-${order.id.substring(0, 8).toUpperCase()} pasó a fase de Ensamblaje.`,
+        "success"
+      );
+      setSelectedVoucherOrder(null);
+      setShowRejectReasonInput(false);
+    } catch (err) {
+      console.error("Error approving payment:", err);
+      showToast("Error al verificar el comprobante de pago.", "info");
+    } finally {
+      setIsVerifyingPayment(false);
+    }
+  };
+
+  const handleRejectPayment = async (order: any) => {
+    if (!rejectReason.trim()) {
+      alert("Por favor ingresa un motivo para el rechazo del comprobante.");
+      return;
+    }
+    setIsVerifyingPayment(true);
+    try {
+      await verifyOrderPayment(
+        order.id,
+        user?.displayName || user?.email || "Admin LUTEAME",
+        false,
+        "pago_rechazado"
+      );
+      showToast(
+        `Comprobante rechazado para el pedido LUTE-${order.id.substring(0, 8).toUpperCase()}.`,
+        "info"
+      );
+      setSelectedVoucherOrder(null);
+      setShowRejectReasonInput(false);
+      setRejectReason("");
+    } catch (err) {
+      console.error("Error rejecting payment:", err);
+      showToast("Error al rechazar el comprobante.", "info");
+    } finally {
+      setIsVerifyingPayment(false);
+    }
+  };
+
   // Real Ticket resolution
   const handleResolveTicket = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -952,6 +1013,35 @@ export default function AdminPage() {
   // Calculate totals
   const totalStock = products.reduce((acc, p) => acc + (p.stock || 0), 0);
   const totalValue = products.reduce((acc, p) => acc + ((p.precio || 0) * (p.stock || 0)), 0);
+
+  // Orders computations
+  const pendingVouchersCount = orders.filter(
+    (o) =>
+      (o.comprobantePago?.voucherUrl || o.detallesPago?.voucherUrl) &&
+      !o.comprobantePago?.verificadoPorAdmin &&
+      o.estado !== "pago_rechazado" &&
+      o.estado !== "completado"
+  ).length;
+
+  const assemblyOrdersCount = orders.filter((o) => o.estado === "en_ensamblaje").length;
+  const completedOrdersCount = orders.filter((o) => o.estado === "completado").length;
+
+  const filteredOrders = orders.filter((order) => {
+    if (orderFilter === "revision") {
+      return (
+        (order.comprobantePago?.voucherUrl || order.detallesPago?.voucherUrl) &&
+        !order.comprobantePago?.verificadoPorAdmin &&
+        order.estado !== "pago_rechazado"
+      );
+    }
+    if (orderFilter === "ensamblaje") {
+      return order.estado === "en_ensamblaje";
+    }
+    if (orderFilter === "completados") {
+      return order.estado === "completado";
+    }
+    return true;
+  });
 
   return (
     <div className="min-h-screen bg-background text-on-background pb-16">
@@ -1099,13 +1189,19 @@ export default function AdminPage() {
           </button>
           <button
             onClick={() => setActiveTab("pedidos")}
-            className={`pb-3 transition-colors shrink-0 ${
+            className={`pb-3 transition-colors shrink-0 flex items-center gap-2 ${
               activeTab === "pedidos"
                 ? "text-primary border-b-2 border-primary"
                 : "text-on-surface-variant hover:text-white"
             }`}
           >
-            Pedidos ({orders.length})
+            <span>Pedidos ({orders.length})</span>
+            {pendingVouchersCount > 0 && (
+              <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 font-mono animate-pulse flex items-center gap-0.5">
+                <span className="material-symbols-outlined text-[11px]">photo_camera</span>
+                {pendingVouchersCount}
+              </span>
+            )}
           </button>
           <button
             onClick={() => setActiveTab("crm")}
@@ -1282,12 +1378,18 @@ export default function AdminPage() {
 
         {/* TAB 2: ORDER MANAGEMENT */}
         {activeTab === "pedidos" && (
-          <div className="glass-panel p-6 rounded-xl border border-outline-variant/20 animate-fade-in">
-            <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
-              <h3 className="font-poppins text-title-lg font-bold text-white flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary">local_shipping</span>
-                Seguimiento de Pedidos y Armado
-              </h3>
+          <div className="glass-panel p-6 rounded-xl border border-outline-variant/20 animate-fade-in space-y-6">
+            <div className="flex flex-wrap justify-between items-center gap-4">
+              <div>
+                <h3 className="font-poppins text-title-lg font-bold text-white flex items-center gap-2">
+                  <span className="material-symbols-outlined text-primary">local_shipping</span>
+                  Seguimiento de Pedidos y Validación de Pagos
+                </h3>
+                <p className="font-montserrat text-xs text-on-surface-variant mt-0.5">
+                  Verifica comprobantes de Yape, Plin y BCP antes de iniciar el armado y pruebas de estrés.
+                </p>
+              </div>
+
               {orders.length > 0 && (
                 <button
                   onClick={handleClearOrders}
@@ -1304,61 +1406,196 @@ export default function AdminPage() {
               )}
             </div>
 
-            {orders.length === 0 ? (
+            {/* Sub-filters */}
+            <div className="flex flex-wrap gap-2 pt-2 border-b border-outline-variant/10 pb-4">
+              <button
+                onClick={() => setOrderFilter("todos")}
+                className={`text-xs font-montserrat font-bold py-1.5 px-3 rounded-lg border transition-all ${
+                  orderFilter === "todos"
+                    ? "bg-primary-container/20 border-primary text-primary shadow-[0_0_10px_rgba(167,0,254,0.15)]"
+                    : "border-outline-variant/10 text-on-surface-variant hover:bg-white/5"
+                }`}
+              >
+                Todos ({orders.length})
+              </button>
+
+              <button
+                onClick={() => setOrderFilter("revision")}
+                className={`text-xs font-montserrat font-bold py-1.5 px-3 rounded-lg border transition-all flex items-center gap-1.5 ${
+                  orderFilter === "revision"
+                    ? "bg-amber-500/20 border-amber-400 text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.2)]"
+                    : "border-outline-variant/10 text-on-surface-variant hover:bg-white/5"
+                }`}
+              >
+                <span className="material-symbols-outlined text-sm">photo_camera</span>
+                Vouchers por Validar ({pendingVouchersCount})
+                {pendingVouchersCount > 0 && (
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                )}
+              </button>
+
+              <button
+                onClick={() => setOrderFilter("ensamblaje")}
+                className={`text-xs font-montserrat font-bold py-1.5 px-3 rounded-lg border transition-all flex items-center gap-1.5 ${
+                  orderFilter === "ensamblaje"
+                    ? "bg-tertiary/20 border-tertiary text-tertiary shadow-[0_0_10px_rgba(167,0,254,0.15)]"
+                    : "border-outline-variant/10 text-on-surface-variant hover:bg-white/5"
+                }`}
+              >
+                <span className="material-symbols-outlined text-sm">build</span>
+                En Ensamblaje ({assemblyOrdersCount})
+              </button>
+
+              <button
+                onClick={() => setOrderFilter("completados")}
+                className={`text-xs font-montserrat font-bold py-1.5 px-3 rounded-lg border transition-all flex items-center gap-1.5 ${
+                  orderFilter === "completados"
+                    ? "bg-emerald-500/20 border-emerald-400 text-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.2)]"
+                    : "border-outline-variant/10 text-on-surface-variant hover:bg-white/5"
+                }`}
+              >
+                <span className="material-symbols-outlined text-sm">verified</span>
+                Completados ({completedOrdersCount})
+              </button>
+            </div>
+
+            {filteredOrders.length === 0 ? (
               <p className="text-center font-montserrat text-sm text-on-surface-variant py-8">
-                No hay pedidos registrados en la tienda en este momento.
+                {orderFilter === "revision"
+                  ? "¡Excelente! No hay comprobantes de pago pendientes de revisión en este momento."
+                  : "No se encontraron pedidos en esta categoría."}
               </p>
             ) : (
               <div className="space-y-4">
-                {orders.map((order) => {
+                {filteredOrders.map((order) => {
                   const date = order.fecha ? new Date(order.fecha.seconds * 1000).toLocaleString("es-PE") : "—";
                   const isExpanded = expandedOrders[order.id];
+                  const hasVoucher = Boolean(order.comprobantePago?.voucherUrl || order.detallesPago?.voucherUrl);
+                  const isVerified = Boolean(order.comprobantePago?.verificadoPorAdmin);
+                  const isRejected = order.estado === "pago_rechazado";
+                  const refCode = order.comprobantePago?.numeroOperacion || order.detallesPago?.referencia;
+
+                  const waMsg = encodeURIComponent(
+                    `¡Hola ${order.clienteNombre}! 👋 Te contactamos de LUTEAME en relación a tu pedido LUTE-${order.id.substring(0, 8).toUpperCase()} por S/. ${order.total.toLocaleString("es-PE")}.`
+                  );
+                  const waLink = `https://wa.me/51${order.telefono?.replace(/\D/g, "")}?text=${waMsg}`;
 
                   return (
                     <div
                       key={order.id}
-                      className="border border-outline-variant/15 rounded-xl p-4 bg-surface-container-low/20 space-y-4"
+                      className={`border rounded-xl p-4 transition-all duration-200 space-y-4 ${
+                        hasVoucher && !isVerified && !isRejected
+                          ? "border-amber-500/30 bg-amber-500/[0.03] shadow-[0_0_15px_rgba(245,158,11,0.05)]"
+                          : "border-outline-variant/15 bg-surface-container-low/20"
+                      }`}
                     >
                       {/* Top Header */}
                       <div className="flex flex-wrap justify-between items-start gap-4">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
+                        <div className="space-y-1.5">
+                          <div className="flex flex-wrap items-center gap-2">
                             <span className="font-mono text-sm font-bold text-white">
                               LUTE-{order.id.substring(0, 8).toUpperCase()}
                             </span>
+                            
+                            {/* Order Status Badge */}
                             <span
-                              className={`chip-purple text-[9px] px-2 py-0.5 rounded border uppercase ${
+                              className={`chip-purple text-[9px] px-2 py-0.5 rounded border uppercase font-bold ${
                                 order.estado === "completado"
                                   ? "border-emerald-500/40 text-emerald-400 bg-emerald-500/10"
                                   : order.estado === "enviado"
                                   ? "border-cyan-400/40 text-cyan-400 bg-cyan-400/10"
                                   : order.estado === "en_ensamblaje"
                                   ? "border-tertiary/40 text-tertiary bg-tertiary/10"
+                                  : order.estado === "pago_rechazado"
+                                  ? "border-error/40 text-error bg-error/10"
+                                  : order.estado === "pago_en_revision"
+                                  ? "border-amber-500/40 text-amber-300 bg-amber-500/10"
                                   : "border-primary-container/40 text-primary bg-primary-container/10"
                               }`}
                             >
                               {order.estado.replace("_", " ")}
                             </span>
+
+                            {/* Payment Voucher Badge */}
+                            {hasVoucher && (
+                              <span
+                                className={`text-[9px] px-2 py-0.5 rounded border font-bold flex items-center gap-1 ${
+                                  isVerified
+                                    ? "border-emerald-500/40 text-emerald-400 bg-emerald-500/10"
+                                    : isRejected
+                                    ? "border-error/40 text-error bg-error/10"
+                                    : "border-amber-500/40 text-amber-300 bg-amber-500/10 animate-pulse"
+                                }`}
+                              >
+                                <span className="material-symbols-outlined text-[11px]">
+                                  {isVerified ? "verified" : isRejected ? "cancel" : "photo_camera"}
+                                </span>
+                                {isVerified
+                                  ? "Pago Verificado"
+                                  : isRejected
+                                  ? "Comprobante Rechazado"
+                                  : "Voucher Por Validar"}
+                              </span>
+                            )}
                           </div>
+
                           <p className="font-montserrat text-[10px] text-on-surface-variant">
-                            Registrado el: {date} · Total: <strong className="text-primary font-mono text-xs">S/. {order.total.toLocaleString("es-PE")}</strong>
+                            Cliente: <strong className="text-white">{order.clienteNombre}</strong> · Total:{" "}
+                            <strong className="text-primary font-mono text-xs">S/. {order.total.toLocaleString("es-PE")}</strong>
+                            {refCode && (
+                              <span className="ml-2 font-mono text-on-surface-variant">
+                                [Operación: <strong className="text-white">{refCode}</strong>]
+                              </span>
+                            )}
+                            {" "}· {date}
                           </p>
                         </div>
 
                         {/* Dropdown status update & actions */}
-                        <div className="flex items-center gap-2">
-                          <label className="font-montserrat text-[10px] text-on-surface-variant font-bold uppercase tracking-wider hidden sm:inline">
-                            Estado:
-                          </label>
+                        <div className="flex flex-wrap items-center gap-2">
+                          {hasVoucher && (
+                            <button
+                              onClick={() => {
+                                setSelectedVoucherOrder(order);
+                                setShowRejectReasonInput(false);
+                                setRejectReason("");
+                                setIsImageZoomed(false);
+                              }}
+                              className={`text-xs py-1 px-2.5 rounded-lg flex items-center gap-1.5 font-bold transition-all shadow-sm ${
+                                !isVerified && !isRejected
+                                  ? "bg-amber-500 hover:bg-amber-400 text-black shadow-amber-500/20"
+                                  : "bg-surface-container-high hover:bg-surface-container-highest text-white border border-outline-variant/20"
+                              }`}
+                            >
+                              <span className="material-symbols-outlined text-sm">visibility</span>
+                              Ver Comprobante
+                            </button>
+                          )}
+
+                          <a
+                            href={waLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-[#25D366]/20 hover:bg-[#25D366]/30 text-[#25D366] border border-[#25D366]/40 text-xs py-1 px-2 rounded-lg flex items-center gap-1 font-bold transition-colors"
+                            title="Abrir WhatsApp del cliente"
+                          >
+                            <span className="material-symbols-outlined text-sm">chat</span>
+                            WA
+                          </a>
+
                           <select
                             value={order.estado}
                             onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
                             className="bg-background border border-outline-variant/20 rounded px-2.5 py-1 text-xs text-white focus:outline-none"
                           >
                             <option value="pendiente">Pendiente</option>
+                            <option value="pago_en_revision">Pago en Revisión</option>
                             <option value="en_ensamblaje">En Ensamblaje</option>
+                            <option value="pruebas_estres">Pruebas de Estrés</option>
+                            <option value="listo_entrega">Listo para Entrega</option>
                             <option value="enviado">Enviado</option>
                             <option value="completado">Completado</option>
+                            <option value="pago_rechazado">Pago Rechazado</option>
                           </select>
 
                           <button
@@ -1393,10 +1630,15 @@ export default function AdminPage() {
                               <p className="text-white"><strong className="text-on-surface-variant font-normal">Teléfono / WA:</strong> {order.telefono}</p>
                               <p className="text-white"><strong className="text-on-surface-variant font-normal">Dirección:</strong> {order.direccion}</p>
                               <p className="text-white capitalize">
-                                <strong className="text-on-surface-variant font-normal">Pago:</strong> {order.metodoPago.replace("_", " ")}
+                                <strong className="text-on-surface-variant font-normal">Pago:</strong> {order.metodoPago?.replace("_", " ")}
                                 {order.detallesPago?.referencia && ` (Operación: ${order.detallesPago.referencia})`}
                                 {order.detallesPago?.tarjetaUltimosCuatro && ` (Tarjeta terminada en: ${order.detallesPago.tarjetaUltimosCuatro})`}
                               </p>
+                              {order.comprobantePago?.notasCliente && (
+                                <p className="text-amber-300">
+                                  <strong className="text-on-surface-variant font-normal">Nota Cliente:</strong> {order.comprobantePago.notasCliente}
+                                </p>
+                              )}
                             </div>
                           </div>
 
@@ -1404,7 +1646,7 @@ export default function AdminPage() {
                           <div className="space-y-2">
                             <h4 className="font-bold text-white uppercase tracking-wider text-[10px] text-primary">Artículos Adquiridos</h4>
                             <div className="space-y-2">
-                              {order.items.map((item: any, idx: number) => (
+                              {order.items?.map((item: any, idx: number) => (
                                 <div key={idx} className="bg-background/30 p-3 rounded-lg border border-outline-variant/5">
                                   <div className="flex justify-between items-start font-semibold text-white">
                                     <span className="truncate max-w-[200px]" title={item.nombre}>{item.nombre}</span>
@@ -2207,6 +2449,221 @@ export default function AdminPage() {
                 </div>
               </div>
             )}
+          </div>
+        )}
+        {/* VOUCHER LIGHTBOX & PAYMENT VERIFICATION MODAL */}
+        {selectedVoucherOrder && (
+          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in overflow-y-auto">
+            <div className="glass-panel w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl border border-primary/30 shadow-2xl p-6 relative flex flex-col gap-6">
+              {/* Modal Header */}
+              <div className="flex justify-between items-start border-b border-outline-variant/10 pb-4">
+                <div className="space-y-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-poppins text-lg font-bold text-white">
+                      Validación de Comprobante: LUTE-{selectedVoucherOrder.id.substring(0, 8).toUpperCase()}
+                    </span>
+                    <span
+                      className={`text-[9px] px-2 py-0.5 rounded border uppercase font-bold ${
+                        selectedVoucherOrder.comprobantePago?.verificadoPorAdmin
+                          ? "border-emerald-500/40 text-emerald-400 bg-emerald-500/10"
+                          : selectedVoucherOrder.estado === "pago_rechazado"
+                          ? "border-error/40 text-error bg-error/10"
+                          : "border-amber-500/40 text-amber-300 bg-amber-500/10"
+                      }`}
+                    >
+                      {selectedVoucherOrder.comprobantePago?.verificadoPorAdmin
+                        ? "Pago Verificado"
+                        : selectedVoucherOrder.estado === "pago_rechazado"
+                        ? "Comprobante Rechazado"
+                        : "Pendiente de Aprobación"}
+                    </span>
+                  </div>
+                  <p className="font-montserrat text-xs text-on-surface-variant">
+                    Revisa la captura del pago enviada por el cliente y valida el monto antes de pasar a ensamblaje.
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => setSelectedVoucherOrder(null)}
+                  className="p-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant hover:text-white transition-colors"
+                  title="Cerrar modal"
+                >
+                  <span className="material-symbols-outlined text-lg">close</span>
+                </button>
+              </div>
+
+              {/* Modal Body: 2 Columns */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+                {/* Left: Image Lightbox with Zoom */}
+                <div className="md:col-span-7 space-y-3">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-on-surface-variant font-bold uppercase tracking-wider text-[10px]">
+                      Captura del Comprobante
+                    </span>
+                    <button
+                      onClick={() => setIsImageZoomed(!isImageZoomed)}
+                      className="text-primary hover:text-primary-container text-xs flex items-center gap-1 font-bold"
+                    >
+                      <span className="material-symbols-outlined text-sm">
+                        {isImageZoomed ? "zoom_out" : "zoom_in"}
+                      </span>
+                      {isImageZoomed ? "Vista Normal" : "Zoom Completo"}
+                    </button>
+                  </div>
+
+                  <div
+                    className={`rounded-xl border border-outline-variant/20 bg-black/40 overflow-hidden flex items-center justify-center transition-all ${
+                      isImageZoomed ? "max-h-[600px] overflow-auto cursor-zoom-out" : "max-h-[380px] cursor-zoom-in"
+                    }`}
+                    onClick={() => setIsImageZoomed(!isImageZoomed)}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={selectedVoucherOrder.comprobantePago?.voucherUrl || selectedVoucherOrder.detallesPago?.voucherUrl}
+                      alt="Comprobante de Pago Completo"
+                      className={`object-contain rounded-lg transition-transform ${
+                        isImageZoomed ? "w-full scale-125 my-8" : "w-full max-h-[360px]"
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                {/* Right: Order & Payment Info + Verification Actions */}
+                <div className="md:col-span-5 space-y-4 font-montserrat text-xs">
+                  {/* Payment Data Card */}
+                  <div className="p-4 rounded-xl bg-surface-container-low/40 border border-outline-variant/10 space-y-2.5">
+                    <h4 className="text-white font-bold text-xs uppercase tracking-wider text-primary border-b border-outline-variant/10 pb-2 flex items-center gap-1.5">
+                      <span className="material-symbols-outlined text-sm">receipt</span>
+                      Detalles de la Transacción
+                    </h4>
+
+                    <div className="flex justify-between items-center py-1 border-b border-outline-variant/5">
+                      <span className="text-on-surface-variant">Método:</span>
+                      <span className="text-white font-bold uppercase">
+                        {selectedVoucherOrder.metodoPago?.replace("_", " ")}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center py-1 border-b border-outline-variant/5">
+                      <span className="text-on-surface-variant">Nº Operación:</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-primary font-mono font-bold select-all">
+                          {selectedVoucherOrder.comprobantePago?.numeroOperacion || selectedVoucherOrder.detallesPago?.referencia || "—"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center py-1 border-b border-outline-variant/5">
+                      <span className="text-on-surface-variant">Monto del Pedido:</span>
+                      <span className="text-primary font-poppins font-bold text-sm">
+                        S/. {selectedVoucherOrder.total.toLocaleString("es-PE")}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center py-1 border-b border-outline-variant/5">
+                      <span className="text-on-surface-variant">Monto Reportado:</span>
+                      <span className="text-emerald-400 font-poppins font-bold text-sm">
+                        S/. {(selectedVoucherOrder.comprobantePago?.montoReportado || selectedVoucherOrder.total).toLocaleString("es-PE")}
+                      </span>
+                    </div>
+
+                    {selectedVoucherOrder.comprobantePago?.notasCliente && (
+                      <div className="py-1">
+                        <span className="text-on-surface-variant block mb-0.5">Nota del Cliente:</span>
+                        <p className="text-white font-medium italic bg-background/50 p-2 rounded border border-outline-variant/5">
+                          "{selectedVoucherOrder.comprobantePago.notasCliente}"
+                        </p>
+                      </div>
+                    )}
+
+                    {selectedVoucherOrder.comprobantePago?.verificadoPorAdmin && (
+                      <div className="pt-2 border-t border-outline-variant/10 text-emerald-400 font-medium">
+                        ✓ Aprobado por {selectedVoucherOrder.comprobantePago.verificadoPor || "Admin"} el {new Date(selectedVoucherOrder.comprobantePago.fechaVerificacion || Date.now()).toLocaleDateString("es-PE")}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Customer Info */}
+                  <div className="p-4 rounded-xl bg-surface-container-low/40 border border-outline-variant/10 space-y-2">
+                    <h4 className="text-white font-bold text-xs uppercase tracking-wider text-primary border-b border-outline-variant/10 pb-2 flex items-center gap-1.5">
+                      <span className="material-symbols-outlined text-sm">person</span>
+                      Datos del Cliente
+                    </h4>
+                    <p className="text-white"><strong className="text-on-surface-variant font-normal">Nombre:</strong> {selectedVoucherOrder.clienteNombre}</p>
+                    <p className="text-white"><strong className="text-on-surface-variant font-normal">Teléfono / WA:</strong> {selectedVoucherOrder.telefono}</p>
+                    <p className="text-white"><strong className="text-on-surface-variant font-normal">Dirección:</strong> {selectedVoucherOrder.direccion}</p>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="space-y-2.5 pt-2">
+                    {!selectedVoucherOrder.comprobantePago?.verificadoPorAdmin && (
+                      <button
+                        onClick={() => handleApprovePayment(selectedVoucherOrder)}
+                        disabled={isVerifyingPayment}
+                        className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-poppins font-bold text-xs py-3 px-4 rounded-xl flex justify-center items-center gap-2 shadow-lg shadow-emerald-500/20 uppercase tracking-wider transition-all disabled:opacity-50"
+                      >
+                        {isVerifyingPayment ? (
+                          <span className="material-symbols-outlined animate-spin text-sm">progress_activity</span>
+                        ) : (
+                          <span className="material-symbols-outlined text-base">verified</span>
+                        )}
+                        Aprobar Pago y Pasar a Ensamblaje
+                      </button>
+                    )}
+
+                    <a
+                      href={`https://wa.me/51${selectedVoucherOrder.telefono?.replace(/\D/g, "")}?text=${encodeURIComponent(
+                        `¡Hola ${selectedVoucherOrder.clienteNombre}! 👋 Te confirmamos desde *LUTEAME* que tu comprobante de pago para el pedido *LUTE-${selectedVoucherOrder.id.substring(0, 8).toUpperCase()}* ha sido verificado con éxito por S/. ${selectedVoucherOrder.total.toLocaleString("es-PE")}.\n\nTu equipo ha pasado a la fase de *Ensamblaje Técnico y Pruebas*. ¡Te mantendremos informado del avance!`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-black font-poppins font-bold text-xs py-2.5 px-4 rounded-xl flex justify-center items-center gap-2 shadow-md shadow-[#25D366]/20 uppercase tracking-wider transition-all"
+                    >
+                      <span className="material-symbols-outlined text-base">chat</span>
+                      Confirmar por WhatsApp
+                    </a>
+
+                    {!showRejectReasonInput ? (
+                      <button
+                        onClick={() => setShowRejectReasonInput(true)}
+                        className="w-full btn-secondary text-xs py-2.5 text-error border-error/30 hover:bg-error/10 hover:border-error/60 transition-colors flex justify-center items-center gap-1.5"
+                      >
+                        <span className="material-symbols-outlined text-sm">cancel</span>
+                        Rechazar Comprobante
+                      </button>
+                    ) : (
+                      <div className="p-3 rounded-xl bg-error/10 border border-error/30 space-y-2 animate-fade-in">
+                        <label className="block text-[10px] text-error font-bold uppercase tracking-wider">
+                          Motivo del Rechazo:
+                        </label>
+                        <input
+                          type="text"
+                          value={rejectReason}
+                          onChange={(e) => setRejectReason(e.target.value)}
+                          placeholder="Ej. Monto no coincide / Comprobante ilegible"
+                          className="input-glass pl-3 text-xs w-full"
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleRejectPayment(selectedVoucherOrder)}
+                            disabled={isVerifyingPayment}
+                            className="btn-primary text-xs py-2 px-3 flex-1 bg-error hover:bg-error/80 text-white font-bold"
+                          >
+                            Confirmar Rechazo
+                          </button>
+                          <button
+                            onClick={() => setShowRejectReasonInput(false)}
+                            className="btn-secondary text-xs py-2 px-3"
+                          >
+                            Cancelar
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </main>

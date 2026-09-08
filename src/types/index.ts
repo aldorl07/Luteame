@@ -158,4 +158,73 @@ export interface Lead {
   fechaActualizacion?: Timestamp | any;
 }
 
+// ─── Order & Payment Proof Types ─────────────────────────────────────────────
+export type PaymentMethod =
+  | "yape_plin"
+  | "transferencia"
+  | "tarjeta"
+  | "efectivo_tienda";
+
+export type OrderStatus =
+  | "pendiente"
+  | "pago_en_revision"
+  | "pagado"
+  | "en_ensamblaje"
+  | "pruebas_estres"
+  | "listo_entrega"
+  | "enviado"
+  | "completado"
+  | "cancelado";
+
+export interface OrderPaymentProof {
+  voucherUrl?: string;          // Data URL or Image URL
+  numeroOperacion?: string;     // Transaction reference code
+  fechaPago?: string;           // Timestamp
+  metodoPago: PaymentMethod | string;
+  montoReportado: number;
+  notasCliente?: string;
+  verificadoPorAdmin?: boolean;
+  fechaVerificacion?: string;
+  verificadoPor?: string;
+}
+
+export interface OrderItemComponent {
+  categoria: string;
+  nombre: string;
+  precio: number;
+}
+
+export interface OrderItem {
+  nombre: string;
+  tipo: CartItemType;
+  cantidad: number;
+  precioUnitario: number;
+  precioTotal: number;
+  componentes?: OrderItemComponent[] | null;
+}
+
+export interface Order {
+  id: string;
+  clienteId?: string;
+  clienteNombre: string;
+  clienteEmail: string;
+  telefono: string;
+  direccion: string;
+  metodoPago: PaymentMethod | string;
+  comprobantePago?: OrderPaymentProof;
+  detallesPago?: {
+    referencia?: string;
+    voucherUrl?: string;
+    tarjetaUltimosCuatro?: string;
+    banco?: string;
+  };
+  items: OrderItem[];
+  total: number;
+  estado: OrderStatus | string;
+  fecha?: Timestamp | any;
+  fechaActualizacion?: Timestamp | any;
+  notasAdmin?: string;
+}
+
+
 

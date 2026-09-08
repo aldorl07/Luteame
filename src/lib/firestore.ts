@@ -204,7 +204,53 @@ export function subscribeToAllOrders(callback: (orders: any[]) => void): Unsubsc
 
 export async function updateOrderStatus(orderId: string, status: string): Promise<void> {
   const ref = doc(db, "pedidos", orderId);
-  await setDoc(ref, { estado: status }, { merge: true });
+  await setDoc(ref, { estado: status, fechaActualizacion: serverTimestamp() }, { merge: true });
+}
+
+export async function verifyOrderPayment(
+  orderId: string,
+  verifiedBy: string,
+  approve: boolean,
+  newStatus: string = approve ? "en_ensamblaje" : "pago_rechazado"
+): Promise<void> {
+  const ref = doc(db, "pedidos", orderId);
+  await setDoc(
+    ref,
+    {
+      estado: newStatus,
+      "comprobantePago.verificadoPorAdmin": approve,
+      "comprobantePago.verificadoPor": verifiedBy,
+      "comprobantePago.fechaVerificacion": new Date().toISOString(),
+      fechaActualizacion: serverTimestamp(),
+    },
+    { merge: true }
+  );
+}
+
+export async function updateOrderPaymentProof(
+  orderId: string,
+  proof: {
+    voucherUrl?: string;
+    numeroOperacion?: string;
+    montoReportado: number;
+    metodoPago: string;
+    notasCliente?: string;
+  }
+): Promise<void> {
+  const ref = doc(db, "pedidos", orderId);
+  await setDoc(
+    ref,
+    {
+      comprobantePago: {
+        ...proof,
+        fechaPago: new Date().toISOString(),
+        verificadoPorAdmin: false,
+      },
+      estado: "pago_en_revision",
+      fechaActualizacion: serverTimestamp(),
+    },
+    { merge: true }
+  );
 }
 
 export async function deleteOrder(orderId: string): Promise<void> {
