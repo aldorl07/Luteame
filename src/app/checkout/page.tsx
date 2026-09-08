@@ -307,7 +307,7 @@ export default function CheckoutPage() {
       (createdOrderData.comprobantePago?.numeroOperacion ? `🔢 *Nº Operación:* ${createdOrderData.comprobantePago.numeroOperacion}\n` : "") +
       `\nAdjunto la confirmación para iniciar el ensamblaje y preparación. ¡Muchas gracias!`
     );
-    const waUrl = `https://wa.me/51964123456?text=${waText}`;
+    const waUrl = `https://wa.me/51969445063?text=${waText}`;
 
     return (
       <div className="section-container py-brand-xl max-w-3xl animate-fade-in">
@@ -673,11 +673,11 @@ export default function CheckoutPage() {
                           Escanea el QR o yapea al número:
                           <div className="mt-1 flex items-center gap-2">
                             <span className="text-white font-mono font-bold text-sm px-2 py-0.5 rounded bg-background/50 border border-outline-variant/20">
-                              964 123 456
+                              969 445 063
                             </span>
                             <button
                               type="button"
-                              onClick={() => handleCopy("964123456", "yape_tel")}
+                              onClick={() => handleCopy("969445063", "yape_tel")}
                               className="text-[11px] px-2 py-0.5 rounded bg-primary-container/20 text-primary hover:bg-primary-container/30 transition-colors flex items-center gap-1 font-bold"
                             >
                               <span className="material-symbols-outlined text-xs">content_copy</span>
@@ -685,7 +685,7 @@ export default function CheckoutPage() {
                             </button>
                           </div>
                           <span className="text-[10px] text-on-surface-variant block mt-0.5">
-                            Titular: <strong>Aldo Ramos L. — LUTEAME SAC</strong>
+                            Titular: <strong>Aldo Requena L. — LUTEAME SAC</strong>
                           </span>
                         </li>
                         <li>Transfiere el monto exacto: <strong className="text-primary font-bold">S/. {total.toLocaleString("es-PE")}</strong></li>
@@ -978,7 +978,7 @@ export default function CheckoutPage() {
                         value={cardHolder}
                         onChange={(e) => setCardHolder(e.target.value)}
                         onFocus={() => setIsCardFlipped(false)}
-                        placeholder="Ej. ALDO RAMOS"
+                        placeholder="Ej. ALDO REQUENA"
                         className="input-glass pl-4 uppercase"
                       />
                     </div>

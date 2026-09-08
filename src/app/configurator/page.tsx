@@ -260,7 +260,7 @@ export default function ConfiguratorPage() {
 
 ${quoteNotes.trim() ? `💬 *Consulta adicional:* "${quoteNotes.trim()}"` : ""}`;
 
-      const whatsappUrl = `https://wa.me/51964000000?text=${encodeURIComponent(wspMessage)}`;
+      const whatsappUrl = `https://wa.me/51969445063?text=${encodeURIComponent(wspMessage)}`;
 
       setQuoteSuccessData({ id: code, whatsappUrl });
     } catch (error) {
@@ -302,7 +302,7 @@ ${quoteNotes.trim() ? `💬 *Consulta adicional:* "${quoteNotes.trim()}"` : ""}`
               Restaurar Setup
             </button>
             <a
-              href={`https://wa.me/51964000000?text=${encodeURIComponent(
+              href={`https://wa.me/51969445063?text=${encodeURIComponent(
                 `Hola Luteame, quiero retomar mi cotización guardada por S/. ${pendingQuote.precioTotal.toLocaleString("es-PE")}.`
               )}`}
               target="_blank"
@@ -752,7 +752,7 @@ ${quoteNotes.trim() ? `💬 *Consulta adicional:* "${quoteNotes.trim()}"` : ""}`
                     <input
                       type="text"
                       required
-                      placeholder="Ej. Aldo Ramos"
+                      placeholder="Ej. Aldo Requena"
                       value={quoteName}
                       onChange={(e) => setQuoteName(e.target.value)}
                       className="w-full px-3 py-2 rounded-lg bg-surface-container-lowest border border-outline-variant/30 text-white font-montserrat text-xs focus:border-primary focus:outline-none"
@@ -767,7 +767,7 @@ ${quoteNotes.trim() ? `💬 *Consulta adicional:* "${quoteNotes.trim()}"` : ""}`
                       <input
                         type="tel"
                         required
-                        placeholder="Ej. 964123456"
+                        placeholder="Ej. 969445063"
                         value={quotePhone}
                         onChange={(e) => setQuotePhone(e.target.value)}
                         className="w-full px-3 py-2 rounded-lg bg-surface-container-lowest border border-outline-variant/30 text-white font-montserrat text-xs focus:border-primary focus:outline-none"

@@ -685,7 +685,7 @@ const SAMPLE_PRODUCTS = [
 
 const MOCK_BUILD = {
   id: "000124",
-  clienteNombre: "Aldo Ramos L.",
+  clienteNombre: "Aldo Requena L.",
   componentes: {
     procesadores: { modelo: "AMD Ryzen 9 7950X", serie: "SN-AMD7950X-8829A", garantiaMeses: 24 },
     placas: { modelo: "ASUS ROG Crosshair X670E Hero", serie: "SN-ASUS670-1102A", garantiaMeses: 36 },

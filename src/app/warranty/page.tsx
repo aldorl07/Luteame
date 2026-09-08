@@ -15,7 +15,7 @@ interface BuildData {
 
 const MOCK_BUILD: BuildData = {
   id: "LUTE-000124",
-  clienteNombre: "Aldo Ramos L.",
+  clienteNombre: "Aldo Requena L.",
   fechaEnsamblaje: "15/05/2026",
   garantiaVencimiento: "15/05/2028",
   componentes: {
