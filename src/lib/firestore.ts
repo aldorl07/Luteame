@@ -16,7 +16,7 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { db } from "./firebase";
-import type { Product, UserProfile, Setup, ProductCategory, Lead, LeadStatus, FollowUpRecord } from "@/types";
+import type { Product, UserProfile, Setup, ProductCategory, Lead, LeadStatus, FollowUpRecord, Order } from "@/types";
 
 // ─── Users ────────────────────────────────────────────────────────────────────
 
@@ -251,6 +251,85 @@ export async function updateOrderPaymentProof(
     },
     { merge: true }
   );
+}
+
+export async function getOrderById(orderId: string): Promise<Order | null> {
+  const cleanId = orderId.trim();
+  if (!cleanId) return null;
+
+  // Try direct lookup with exact ID
+  const directSnap = await getDoc(doc(db, "pedidos", cleanId));
+  if (directSnap.exists()) {
+    return { id: directSnap.id, ...directSnap.data() } as Order;
+  }
+
+  // Try removing LUTE- prefix
+  const rawId = cleanId.replace(/^LUTE-/i, "");
+  const rawSnap = await getDoc(doc(db, "pedidos", rawId));
+  if (rawSnap.exists()) {
+    return { id: rawSnap.id, ...rawSnap.data() } as Order;
+  }
+
+  // Scan orders to find matching short prefix (e.g. 8 characters)
+  const snap = await getDocs(collection(db, "pedidos"));
+  for (const d of snap.docs) {
+    const docId = d.id;
+    const formattedId = `LUTE-${docId.substring(0, 8).toUpperCase()}`;
+    const shortId = docId.substring(0, 8).toUpperCase();
+    const searchUpper = cleanId.toUpperCase();
+
+    if (
+      docId.toLowerCase() === cleanId.toLowerCase() ||
+      formattedId === searchUpper ||
+      shortId === searchUpper.replace(/^LUTE-/, "")
+    ) {
+      return { id: d.id, ...d.data() } as Order;
+    }
+  }
+
+  return null;
+}
+
+export function subscribeToOrderById(
+  orderDocId: string,
+  callback: (order: Order | null) => void
+): Unsubscribe {
+  const ref = doc(db, "pedidos", orderDocId);
+  return onSnapshot(ref, (snap) => {
+    if (snap.exists()) {
+      callback({ id: snap.id, ...snap.data() } as Order);
+    } else {
+      callback(null);
+    }
+  });
+}
+
+export function subscribeToOrdersByCustomer(
+  customerIdOrEmail: string,
+  callback: (orders: Order[]) => void
+): Unsubscribe {
+  const q = query(collection(db, "pedidos"));
+
+  return onSnapshot(q, (snapshot) => {
+    const all = snapshot.docs.map((d) => ({
+      id: d.id,
+      ...d.data(),
+    })) as Order[];
+
+    all.sort((a, b) => {
+      const dateA = a.fecha?.seconds || 0;
+      const dateB = b.fecha?.seconds || 0;
+      return dateB - dateA;
+    });
+
+    const userOrders = all.filter(
+      (o) =>
+        (o.clienteId && o.clienteId === customerIdOrEmail) ||
+        (o.clienteEmail && o.clienteEmail.toLowerCase() === customerIdOrEmail.toLowerCase())
+    );
+
+    callback(userOrders);
+  });
 }
 
 export async function deleteOrder(orderId: string): Promise<void> {

@@ -401,21 +401,31 @@ export default function CheckoutPage() {
             )}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
-            <button
-              onClick={() => window.print()}
-              className="btn-primary py-3 text-xs font-bold uppercase tracking-wider flex-1 flex justify-center items-center gap-2"
-            >
-              <span className="material-symbols-outlined text-base">print</span>
-              Imprimir Recibo / PDF
-            </button>
+          <div className="flex flex-col gap-2.5 w-full max-w-md">
             <Link
-              href="/"
-              className="btn-secondary py-3 text-xs font-bold uppercase tracking-wider flex-1 flex justify-center items-center gap-2"
+              href={`/tracking?id=${encodeURIComponent(formattedId)}`}
+              className="btn-primary py-3 text-xs font-bold uppercase tracking-wider flex justify-center items-center gap-2 shadow-lg shadow-primary/20"
             >
-              <span className="material-symbols-outlined text-base">home</span>
-              Volver al Inicio
+              <span className="material-symbols-outlined text-base">radar</span>
+              Rastrear Mi Pedido en Vivo
             </Link>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => window.print()}
+                className="btn-secondary py-2.5 text-xs font-bold uppercase tracking-wider flex-1 flex justify-center items-center gap-2 border-outline-variant/30"
+              >
+                <span className="material-symbols-outlined text-base">print</span>
+                Imprimir Recibo
+              </button>
+              <Link
+                href="/"
+                className="btn-secondary py-2.5 text-xs font-bold uppercase tracking-wider flex-1 flex justify-center items-center gap-2 border-outline-variant/30"
+              >
+                <span className="material-symbols-outlined text-base">home</span>
+                Volver al Inicio
+              </Link>
+            </div>
           </div>
         </div>
 

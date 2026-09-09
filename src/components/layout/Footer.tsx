@@ -32,23 +32,25 @@ export default function Footer() {
                 Plataforma
               </h5>
               <Link href="/shop"         className="font-montserrat text-body-sm text-on-surface-variant hover:text-primary transition-colors duration-200">Catálogo</Link>
-              <Link href="/configurator" className="font-montserrat text-body-sm text-on-surface-variant hover:text-primary transition-colors duration-200">Configurador</Link>
+              <Link href="/configurator" className="font-montserrat text-body-sm text-on-surface-variant hover:text-primary transition-colors duration-200">Configurador PC</Link>
+              <Link href="/services"     className="font-montserrat text-body-sm text-on-surface-variant hover:text-primary transition-colors duration-200">Servicios Técnicos</Link>
             </nav>
 
             <nav className="flex flex-col gap-3">
               <h5 className="font-montserrat text-label-caps uppercase tracking-widest text-on-surface mb-1">
-                Legal
+                Atención & Clientes
               </h5>
-              <Link href="#" className="font-montserrat text-body-sm text-on-surface-variant hover:text-primary transition-colors duration-200">Privacy Policy</Link>
-              <Link href="#" className="font-montserrat text-body-sm text-on-surface-variant hover:text-primary transition-colors duration-200">Terms of Service</Link>
+              <Link href="/tracking"     className="font-montserrat text-body-sm text-on-surface-variant hover:text-primary transition-colors duration-200">Seguimiento de Pedido</Link>
+              <Link href="/warranty"     className="font-montserrat text-body-sm text-on-surface-variant hover:text-primary transition-colors duration-200">Garantía Local (2 Años)</Link>
+              <Link href="/support"      className="font-montserrat text-body-sm text-on-surface-variant hover:text-primary transition-colors duration-200">Centro de Soporte</Link>
             </nav>
 
             <nav className="flex flex-col gap-3">
               <h5 className="font-montserrat text-label-caps uppercase tracking-widest text-on-surface mb-1">
-                Soporte
+                Contacto Huancayo
               </h5>
-              <Link href="#" className="font-montserrat text-body-sm text-on-surface-variant hover:text-primary transition-colors duration-200">Warranty</Link>
-              <Link href="#" className="font-montserrat text-body-sm text-on-surface-variant hover:text-primary transition-colors duration-200">Contact</Link>
+              <a href="https://wa.me/51969445063" target="_blank" rel="noopener noreferrer" className="font-montserrat text-body-sm text-emerald-400 hover:underline">WhatsApp: 969 445 063</a>
+              <span className="font-montserrat text-body-sm text-on-surface-variant">Huancayo, Junín</span>
             </nav>
           </div>
         </div>

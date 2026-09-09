@@ -15,6 +15,7 @@ const NAV_LINKS = [
   { href: "/configurator", label: "Configurador" },
   { href: "/shop",         label: "Tienda" },
   { href: "/services",     label: "Servicios" },
+  { href: "/tracking",     label: "Seguimiento" },
   { href: "/support",      label: "Soporte" },
   { href: "/warranty",     label: "Garantías" },
 ];
